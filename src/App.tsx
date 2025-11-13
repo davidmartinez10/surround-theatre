@@ -1,12 +1,52 @@
 import style from "./App.module.css";
+import fs from "nwts-tools/lib/node/fs";
+import path from "nwts-tools/lib/node/path";
+import { state } from "./state";
+// import { video, bar, controls, refresh_player } from "./video";
+
+const select = (
+  <select value={JSON.stringify(state.virtualizer)}>
+    <optgroup label="HRIR">
+      {fs.readdirSync("./hrir").filter(function predicate(value) { return path.extname(value) === ".wav"; }).map(function callbackfn(filename) {
+        return (
+          <option label={filename} value={JSON.stringify({ type: "hrir", filename })}></option>
+        );
+      })}
+    </optgroup>
+    <optgroup label="Sofalizer">
+      {fs.readdirSync("./sofa").filter(function predicate(value) { return path.extname(value) === ".sofa"; }).map(function callbackfn(filename) {
+        return (
+          <option label={filename} value={JSON.stringify({ type: "sofa", filename })}></option>
+        );
+      })}
+    </optgroup>
+  </select>
+) as HTMLSelectElement;
+
+select.onchange = function (event: any) {
+  state.virtualizer = JSON.parse(event?.target?.value);
+  // refresh_player();
+};
 
 function App() {
   return (
-    <div>
-      <h1 class={style.header}>NW.ts Tools Solid Starter with HMR</h1>
-      <img src="/nwts.svg" class={style.logo} />
-      <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?</p>
-    </div>
+    <article>
+      <section class="video">
+        <img />
+        {/* {video} */}
+      </section>
+      <section class="panel">
+        {/* {bar}
+        {controls} */}
+        {select}
+      </section>
+      <section>
+        <span>
+
+          <a href={`http://${state.hostname}:${state.port}`}>http://{state.hostname}:{state.port}</a>
+        </span>
+      </section>
+    </article>
   );
 }
 

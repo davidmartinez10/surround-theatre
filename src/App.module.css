@@ -18,3 +18,8 @@
   margin-bottom: 2vh;
   box-sizing: border-box;
 }
+
+.dragging {
+  border: 4px dashed #555;
+  background-color: rgba(200, 200, 200, 0.3);
+}
