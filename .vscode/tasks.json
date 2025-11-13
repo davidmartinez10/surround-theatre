@@ -1,0 +1,81 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "npm-start",
+      "type": "npm",
+      "script": "start",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "custom",
+        "pattern": {
+          "regexp": "^$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*$",
+          "endsPattern": "DevTools listening on.*"
+        }
+      }
+    },
+    {
+      "label": "start",
+      "dependsOn": ["npm-start"],
+      "dependsOrder": "sequence",
+      "type": "shell",
+      "command": "echo Build complete",
+      "problemMatcher": []
+    },
+    {
+      "type": "npm",
+      "script": "dev-hmr",
+      "label": "npm-dev-hmr",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "custom",
+        "pattern": {
+          "regexp": "^$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*$",
+          "endsPattern": "DevTools listening on.*"
+        }
+      }
+    },
+    {
+      "label": "dev-hmr",
+      "dependsOn": ["npm-dev-hmr"],
+      "dependsOrder": "sequence",
+      "type": "shell",
+      "command": "echo Build complete",
+      "problemMatcher": []
+    },
+    {
+      "label": "kill",
+      "command": "echo ${input:terminate}",
+      "type": "shell",
+      "problemMatcher": []
+    },
+    {
+      "label": "kill-hmr",
+      "command": "echo ${input:terminate-hmr}",
+      "type": "shell",
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "terminate",
+      "type": "command",
+      "command": "workbench.action.tasks.terminate",
+      "args": "npm-start"
+    },
+    {
+      "id": "terminate-hmr",
+      "type": "command",
+      "command": "workbench.action.tasks.terminate",
+      "args": "npm-dev-hmr"
+    }
+  ]
+}

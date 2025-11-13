@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Build & Launch Program",
+      "port": 9222,
+      "request": "attach",
+      "type": "chrome",
+      "webRoot": "${workspaceFolder}/build",
+      "preLaunchTask": "start",
+      "postDebugTask": "kill",
+      "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+      "name": "Launch Program with HMR",
+      "port": 9222,
+      "request": "attach",
+      "type": "chrome",
+      "webRoot": "${workspaceFolder}",
+      "preLaunchTask": "dev-hmr",
+      "postDebugTask": "kill-hmr",
+      "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+      "name": "Attach to NWJS",
+      "port": 9222,
+      "request": "attach",
+      "type": "chrome",
+      "webRoot": "${workspaceFolder}",
+      "internalConsoleOptions": "openOnSessionStart"
+    }
+  ]
+}
