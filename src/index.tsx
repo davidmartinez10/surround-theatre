@@ -3,9 +3,13 @@ import style from "./App.module.css";
 
 import { render } from "solid-js/web";
 import os from "nwts-tools/lib/node/os";
+import { proper_spawn, escape_path } from "nwts-tools/dist/lib/proper-spawn";
 
 import App from "./App";
+import { ffmpeg, ffprobe, get_metadata } from "./util/ffmpeg";
 import { manifest } from "../nwts.manifest";
+import { chapters_db, queue_db } from "./util/db";
+import { state } from "./state";
 
 function dropzone() {
 
@@ -33,6 +37,38 @@ function dropzone() {
 
         const files = e.dataTransfer!.files;
         console.log("Files dropped:", files);
+        queue_db.bulkDocs(Array.from(files).map(function (file, index) {
+
+            if (index === 0) {
+                state.file = file.path;
+                get_metadata(file.path).then((metadata) => {
+
+                    if (metadata?.chapters?.length > 0) {
+                        chapters_db.bulkDocs(metadata.chapters.map(function callbackfn(
+                            value: Record<string, (string & { title: string })>) {
+                            return {
+                                start_time: Number(value.start_time),
+                                title: value?.tags?.title,
+                                file_path: file.path,
+                            };
+                        }));
+                        state.tracks = metadata.chapters.map(function callbackfn(
+                            value: Record<string, (string & { title: string })>) {
+                            return {
+                                start_time: Number(value.start_time),
+                                title: value?.tags?.title,
+                            };
+                        });
+                    }
+                });
+            }
+
+            return ({
+                track: `${index + 1}`.padStart(2, '0'),
+                name: file.name,
+            });
+        }));
+
     }
 }
 
@@ -81,7 +117,7 @@ async function main() {
                 win.focus();
             }, 1500);
         });
-    
+
     }
 }
 main();

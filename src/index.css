@@ -3,3 +3,7 @@ body {
   min-height: 100vh;
   overflow: hidden;
 }
+
+x-card {
+  margin: 0;
+}
