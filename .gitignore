@@ -9,3 +9,4 @@ public/package-lock.json
 !.vscode/launch.json
 !.vscode/tasks.json
 .DS_Store
+.aider*

@@ -2,8 +2,10 @@ import "./index.css";
 import style from "./App.module.css";
 
 import { render } from "solid-js/web";
+import os from "nwts-tools/lib/node/os";
 
 import App from "./App";
+import { manifest } from "../nwts.manifest";
 
 function dropzone() {
 
@@ -44,15 +46,43 @@ const root = document.createElement("div") as HTMLElement;
 dropzone();
 document.body.appendChild(root);
 
-render(() => <App />, root);
+async function main() {
+    const { default: xel } = await import("xel/xel.js");
 
-if (import.meta.env.DEV) {
-    win.showDevTools();
-    console.log("DevTools opened");
-    nw.Window.getAll(function ([win]) {
-        setTimeout(function () {
-            win.focus();
-        }, 1500);
-    });
+    switch (os.platform()) {
+        case "darwin":
+            xel.theme = "node_modules/xel/themes/cupertino-dark.css";
+            xel.iconsets = ["node_modules/xel/iconsets/material.svg"];
+            break;
+        case "win32":
+            xel.theme = "node_modules/xel/themes/fluent-dark.css";
+            xel.iconsets = [
+                "node_modules/xel/iconsets/fluent-outlined.svg",
+            ];
+            break;
+        default:
+            xel.theme = "node_modules/xel/themes/adwaita-dark.css";
+            xel.iconsets = ["node_modules/xel/iconsets/material.svg"];
+    }
+    // xel.size = "small";
 
+    if (manifest?.name) {
+        var title = document.querySelector("title");
+        if (title) title.innerText = manifest.name;
+    }
+    // await new Promise((resolve) => setTimeout(resolve, 1e3));
+
+    render(() => <App />, root);
+    if (import.meta.env.DEV) {
+        win.showDevTools();
+        console.log("DevTools opened");
+        nw.Window.getAll(function ([win]) {
+            setTimeout(function () {
+                win.focus();
+            }, 1500);
+        });
+    
+    }
 }
+main();
+
