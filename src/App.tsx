@@ -1,18 +1,27 @@
 import style from "./App.module.css";
-
-const cells = Array.from({ length: 4 }, (_, index) => `Cell ${index + 1}`);
+import Queue from "./Queue";
+import Chapters from "./Chapters";
+import VideoPlayer from "./VideoPlayer";
+import MediaInfo from "./MediaInfo";
 
 function App() {
   return (
-    <main class={style.app}>
-      <section class={style.grid}>
-        {cells.map((label) => (
-          <div class={style.cell}>
-            <span>{label}</span>
-          </div>
-        ))}
-      </section>
-    </main>
+    <x-box class={style.app}>
+      <x-box class={style.grid}>
+        <x-card class={style.cell}>
+          <Queue />
+        </x-card>
+        <x-card class={style.cell}>
+          <Chapters />
+        </x-card>
+        <x-card class={style.cell}>
+          <VideoPlayer />
+        </x-card>
+        <x-card class={style.cell}>
+          <MediaInfo />
+        </x-card>
+      </x-box>
+    </x-box>
   );
 }
 
