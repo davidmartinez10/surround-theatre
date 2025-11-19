@@ -12,6 +12,10 @@ x-card {
   min-width: fit-content
 }
 
+x-select {
+  width: -webkit-fill-available;
+}
+
 video {
   width: -webkit-fill-available;
   height: -webkit-fill-available;
