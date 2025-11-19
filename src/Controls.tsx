@@ -17,6 +17,11 @@ function Controls({ class: className }: { class?: string }) {
 
     return (
         <x-box class={className} style="width: 100%; height: 100%; padding: 0.5rem; align-items: center; justify-content: flex-start;" vertical>
+            { /* Playback Controls */}
+<x-box vertical={false} style="width: 100%; margin: 0.5rem 0; align-items: center;">
+    <x-slider style="width: 100%; height: 4px;" min="0" max="100" value="0"></x-slider>
+</x-box>
+
             <x-box vertical={false} style="justify-content: space-between; width: -webkit-fill-available; margin-bottom: 1rem;">
                 {playback_buttons}
                 {time_display}

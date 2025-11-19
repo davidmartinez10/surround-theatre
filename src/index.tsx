@@ -1,15 +1,14 @@
-import "./index.css";
 import style from "./App.module.css";
+import "./index.css";
 
-import { render } from "solid-js/web";
 import os from "nwts-tools/lib/node/os";
-import { proper_spawn, escape_path } from "nwts-tools/dist/lib/proper-spawn";
+import { render } from "solid-js/web";
 
-import App from "./App";
-import { ffmpeg, ffprobe, get_metadata } from "./util/ffmpeg";
 import { manifest } from "../nwts.manifest";
-import { chapters_db, queue_db } from "./util/db";
+import App from "./App";
 import { state } from "./state";
+import { chapters_db, queue_db } from "./util/db";
+import { get_metadata } from "./util/ffmpeg";
 
 function dropzone() {
 
@@ -86,18 +85,19 @@ async function main() {
     const { default: xel } = await import("xel/xel.js");
 
     switch (os.platform()) {
-        case "darwin":
-            xel.theme = "node_modules/xel/themes/cupertino-dark.css";
-            xel.iconsets = ["node_modules/xel/iconsets/material.svg"];
-            break;
         case "win32":
             xel.theme = "node_modules/xel/themes/fluent-dark.css";
             xel.iconsets = [
                 "node_modules/xel/iconsets/fluent-outlined.svg",
             ];
             break;
-        default:
+        case "aix":
             xel.theme = "node_modules/xel/themes/adwaita-dark.css";
+            xel.iconsets = ["node_modules/xel/iconsets/material.svg"];
+            break;
+        case "darwin":
+        default:
+            xel.theme = "node_modules/xel/themes/cupertino-dark.css";
             xel.iconsets = ["node_modules/xel/iconsets/material.svg"];
     }
     // xel.size = "small";

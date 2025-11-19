@@ -1,4 +1,4 @@
-import { escape_path, proper_spawn } from "nwts-tools/dist/lib/proper-spawn";
+import { escape_path, proper_spawn } from "./proper_spawn";
 
 export const ffmpeg = nw.require("ffmpeg-static") as string;
 export const ffprobe = nw.require("@ffprobe-installer/ffprobe").path as string;
