@@ -5,5 +5,14 @@ body {
 }
 
 x-card {
-  margin: 0;
+  margin: inherit;
+  padding: inherit;
+  box-sizing: border-box;
+  min-height: fit-content;
+  min-width: fit-content
+}
+
+video {
+  width: -webkit-fill-available;
+  height: -webkit-fill-available;
 }

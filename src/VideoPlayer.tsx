@@ -1,8 +1,10 @@
-function VideoPlayer() {
+function VideoPlayer({ class: className }: { class?: string }) {
   return (
-    <video controls style="width: 100%; height: 100%; object-fit: contain;">
-      <source src="" type="video/mp4" />
-    </video>
+    <x-box class={className} style="width: 100%; height: 100%; padding: 0.5rem;">
+      <video controls>
+        <source src="" type="video/mp4" />
+      </video>
+    </x-box>
   );
 }
 

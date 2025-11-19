@@ -1,24 +1,16 @@
 import style from "./App.module.css";
-import Queue from "./Queue";
-import Chapters from "./Chapters";
+import Controls from "./Controls";
 import VideoPlayer from "./VideoPlayer";
-import MediaInfo from "./MediaInfo";
 
 function App() {
   return (
-    <x-box class={style.app}>
+    <x-box class={style.app} vertical>
       <x-box class={style.grid}>
         <x-card class={style.cell}>
-          <Queue />
+          <VideoPlayer class={style.sectioAureaLong} />
         </x-card>
         <x-card class={style.cell}>
-          <Chapters />
-        </x-card>
-        <x-card class={style.cell}>
-          <VideoPlayer />
-        </x-card>
-        <x-card class={style.cell}>
-          <MediaInfo />
+          <Controls class={style.sectioAureaShort} />
         </x-card>
       </x-box>
     </x-box>
