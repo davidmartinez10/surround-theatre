@@ -1,18 +1,13 @@
+import { ChildProcess } from "child_process";
 import child_process from "nwts-tools/lib/node/child_process";
 import os from "nwts-tools/lib/node/os";
 import path from "nwts-tools/lib/node/path";
+import { Readable } from "stream";
 
-/**
- * Spawns a child process with the given command, working directory, and shell.
- * The command is printed to the console before execution.
- *
- * @param {string} command - The command to execute.
- * @param {string} [cwd=process.cwd()] - The working directory for the command.
- * @param {string} [shell=os.platform() === "win32" ? "powershell" : "bash"] - The shell to use for executing the command.
- * @returns {Promise<string>} A promise that resolves with the standard output of the command.
- */
+export type ProperChildProcess = Promise<{ stdout: string, stderr: string }>
+    & { child:ChildProcess };
 
-export function proper_spawn(command: string, cwd = process.cwd(),
+export function proper_exec(command: string, cwd = process.cwd(),
     shell = os.platform() === "win32" ? "powershell"
         : "bash") {
     console.log(`\n$ \x1b[33m${command}\x1b[0m\n`);
@@ -27,31 +22,48 @@ export function proper_spawn(command: string, cwd = process.cwd(),
                 shell,
                 cwd,
                 env: process.env,
-                stdio: ["inherit", "pipe", "inherit"],
+                stdio: ["pipe", "pipe", "pipe"],
             });
+
 
     let stdout = '';
     child.stdout.on('data', function (chunk) {
         stdout += chunk.toString();
     });
 
-    const p
-        = new Promise<string>(function (resolve, reject) {
+    let stderr = '';
+    child.stderr.on('data', function (chunk) {
+        stderr += chunk.toString();
+    });
+
+    const promise
+        = new Promise<{ stdout: string, stderr: string }>(function (resolve, reject) {
             child.on("close", (code) => {
-                resolve(stdout);
+                resolve({ stdout, stderr });
             });
-        }) as
-        Promise<string>
-        & { kill(): Boolean };
+        }) as ProperChildProcess;
 
-    p.kill = function () {
-        if (!child.kill()) {
-            if (child.pid) { return process.kill(child.pid); }
-        }
-        return true;
-    };
+        promise.child = child;
 
-    return p;
+
+    return promise;
+}
+
+export function proper_spawn(command: string, cwd = process.cwd(),
+    shell = os.platform() === "win32" ? "powershell"
+        : "bash") {
+    console.log(`\n$ \x1b[33m${command}\x1b[0m\n`);
+
+    const [cmd, ...args] = command.replaceAll("\\ ", "\n").split(" ");
+    return child_process.spawn(cmd,
+        args.map(function callbackfn(
+            value) { return value.replaceAll("\n", " "); }),
+        {
+            shell,
+            cwd,
+            env: process.env,
+            stdio: ["inherit", "pipe", "inherit"],
+        });
 }
 
 export function escape_path(...paths: string[]) {

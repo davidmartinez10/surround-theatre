@@ -1,0 +1,14 @@
+name: Local Config 2
+version: 1.0.0
+schema: v1
+models:
+  - name: ollama2
+    provider: ollama
+    model: AUTODETECT
+    roles:
+      - chat
+      - edit
+      - apply
+      - rerank
+      - autocomplete
+    apiBase: http://192.168.10.113:11434
