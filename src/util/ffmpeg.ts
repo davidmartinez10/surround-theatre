@@ -92,8 +92,6 @@ export function loudnorm_first_pass(filename: string) {
                 target_offset,
             };
 
-            console.log(55, loudnorm);
-
             if (metadata?.loudnorm) {
                 metadata.loudnorm[unwrap(state).virtualizer.filename] = loudnorm;
             } else {
@@ -128,8 +126,8 @@ export async function start_ffmpeg_process(filename: string): Promise<ChildProce
     var metadata: Meta | undefined;
     try {
         metadata = await metadata_db.get(unwrap(state).path) as Meta;
-        console.log(44, metadata);
     } catch (error) {
+        console.error(error);
     }
     let loudnorm = "";
 
@@ -168,18 +166,17 @@ export async function start_ffmpeg_process(filename: string): Promise<ChildProce
     args.push("-probesize", "32", "-analyzeduration", "0", "-fflags", "nobuffer",
         "-fflags", "discardcorrupt", "-flags", "low_delay");
 
-    // if (state.video_stream !== undefined) {
-    //   args.push(
-    //     "-map",
-    //     `0:${state.video_stream}`,
-    //     "-vcodec",
-    //     state.reencode_video ? "h264" : "copy",
-    //   );
-    // } else {
-    //   args.push("-vn");
-    // }
+    if (state.video_stream !== undefined) {
+      args.push(
+        "-map",
+        `0:${state.video_stream}`,
+        "-vcodec",
+        state.reencode_video ? "h264" : "copy",
+      );
+    } else {
+      args.push("-vn");
+    }
 
-    args.push("-vn");
     args.push("-acodec", "pcm_s16le", "-ar", "44100", "-preset", "veryfast", "-f",
         "matroska");
 
@@ -190,15 +187,14 @@ export async function start_ffmpeg_process(filename: string): Promise<ChildProce
     }
 
     // const file_location = path.parse(filename);
-    console.log(1, `ffmpeg ${args.join(" ")}`);
 
     args.push("-");
-
+    
     const ffmpeg_process_raw = proper_spawn(`${escape_path(ffmpeg)} ${args.join(" ")}`);
 
     if (ffmpeg_process_raw.stderr) {
         (ffmpeg_process_raw.stderr as Readable)
-            .on("data", function data(chunk) { console.log(String(chunk)); });
+            .on("data", function data(chunk) { console.error(String(chunk)); });
     }
 
     if (state.virtualizer.type === "hrir") { return ffmpeg_process_raw; }
@@ -231,9 +227,9 @@ function loudnorm_pipe(ffmpeg_process_raw: ChildProcess, loudnorm: string): Chil
         "44100",
         "-af",
         `loudnorm=${loudnorm}`,
-        //"-vcodec",
-        //"copy",
-        "-vn",
+        "-vcodec",
+        "copy",
+        // "-vn",
         "-f",
         "matroska",
         "-",
@@ -243,11 +239,9 @@ function loudnorm_pipe(ffmpeg_process_raw: ChildProcess, loudnorm: string): Chil
     ffmpeg_process_raw?.stdout?.pipe(ffmpeg_process.stdin!);
 
 
-    console.log(2, `ffmpeg ${args.join(" ")}`);
-
     if (ffmpeg_process.stderr) {
         (ffmpeg_process.stderr as Readable)
-            .on("data", function data(chunk) { console.log(String(chunk)); });
+            .on("data", function data(chunk) { console.error(String(chunk)); });
     }
     ffmpeg_process_raw.on("exit", function () {
         if (os.platform() === "win32") {

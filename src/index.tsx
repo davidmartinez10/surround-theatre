@@ -1,6 +1,6 @@
 import style from "./App.module.css";
 import "./index.css";
-import { chapters_db, queue_db, set_state, State, state, state_db } from "./util/db";
+import { chapters_db, MusicTrack, queue_db, set_state, State, state, state_db } from "./util/db";
 import "./util/media_server";
 
 import os from "nwts-tools/lib/node/os";
@@ -13,8 +13,9 @@ import { video } from "./VideoPlayer";
 import fs from "nwts-tools/lib/node/fs";
 import path from "nwts-tools/lib/node/path";
 import { escape_path, proper_exec, proper_spawn } from "./util/proper_spawn";
-import { unwrap } from "solid-js/store";
 import { refresh_player } from "./VideoPlayer";
+
+const { parse } = nw.require("@lightrabbit/cue-parser/lib/cue.js") as typeof import("@lightrabbit/cue-parser/lib/cue.js");
 
 function dropzone() {
 
@@ -38,22 +39,51 @@ function dropzone() {
         e.preventDefault();
         e.stopPropagation();
 
+        refresh_player(true);
+
         document.body.classList.remove(style.dragging);
 
         const files = e.dataTransfer!.files;
-        console.log("Files dropped:", files);
 
         for (const [index, file] of Array.from(files).entries()) {
 
-            const metadata = await get_metadata(file.path);
+            var new_state = { ...state } as State;
+            if (path.extname(file.name) === ".cue") {
+                const data = await fs.promises.readFile(file.path, { encoding: "utf8" });
+
+                const o = parse(data);
+
+                if ((o.files || []).length === 1) {
+                    // for (const f of o.files!) {
+                    //   process.nextTick(async function callback() {
+                    //     await loudnorm_first_pass(path.join(path.dirname(filename), f.name));
+                    //   });
+                    // }
+                    const [real_file] = o.files!;
+                    new_state.path = path.join(path.dirname(file.path), real_file.name);
+
+                    new_state.tracks = real_file.tracks!.map(function callbackfn(value) {
+                        const { title, performer } = value;
+                        const { min, sec } = value.indexes![0].time;
+                        const start_time = sec + ((min * 60) || 0);
+                        return {
+                            title,
+                            performer,
+                            start_time,
+                        } as MusicTrack;
+                    });
+                }
+            } else {
+                new_state.path = file.path;
+            }
+
+
+            const metadata = await get_metadata(new_state.path);
             console.log("Metadata:", metadata);
             if (index === 0) {
                 const audio_streams = metadata.streams.filter(function (
                     e: { codec_type: string; }) { return e.codec_type === "audio" });
-                    console.log(audio_streams[0])
 
-                var new_state = { ...state } as State;
-                new_state.path = file.path;
                 const audio_stream = audio_streams
                     .sort(function (a: { channels: number; }, b: {
                         channels: number;
@@ -75,16 +105,16 @@ function dropzone() {
 
                 if (vstream?.codec_name) {
                     if (vstream?.codec_name === "mjpeg") {
-                         process.nextTick(async function callback() {
-                             const { stdout } = await proper_exec(`${escape_path(ffmpeg)} -f mjpeg -i ${JSON.stringify(state.path)} -an -f mjpeg -`);
-                             new_state.static_bitmap = stdout.toString();
-                             const src = URL.createObjectURL(new Blob([stdout]));
-                             // document.getElementsByTagName("img")[0].src = src;
-                             video.poster = src;
-                         });
+                        process.nextTick(async function callback() {
+                            const { stdout } = await proper_exec(`${escape_path(ffmpeg)} -f mjpeg -i ${JSON.stringify(state.path)} -an -f mjpeg -`);
+                            new_state.static_bitmap = stdout.toString();
+                            const src = URL.createObjectURL(new Blob([stdout]));
+                            // document.getElementsByTagName("img")[0].src = src;
+                            video.poster = src;
+                        });
                     } else {
                         new_state.video_stream = vstream?.index;
-                        new_state.video_codec = vstream?.codec_name || '';
+                        new_state.video_codec = reencode_video ? "h264" : vstream?.codec_name || '';
                         new_state.reencode_video = reencode_video;
                         new_state.video_streams = video_streams;
                     }
@@ -105,15 +135,14 @@ function dropzone() {
                     }
                 }
 
-                new_state.duration = Number(metadata.format.duration);
+                new_state.duration = Number(metadata?.format?.duration) || 0;
 
-                set_state({
+                await set_state({
                     ...new_state,
                     current_track: index,
-                    current_duration: metadata?.streams[0]?.duration || 0,
                     current_position: 0,
                 });
-                
+
                 refresh_player();
             }
 
@@ -121,7 +150,7 @@ function dropzone() {
                 track: `${index + 1}`.padStart(2, '0'),
                 name: metadata?.tags?.title || file.name,
                 path: file.path,
-                _id: file.path+Date.now(),
+                _id: file.path + Date.now(),
             });
 
         }
@@ -132,10 +161,11 @@ function dropzone() {
 
 const win = nw.Window.get()
 win.on('new-win-policy', function (frame, url, policy) {
-    console.log(url);
+    console.error(url);
     nw.Shell.openExternal(url!);
     policy?.ignore(); // This prevents the new window from opening
 });
+
 const root = document.createElement("div") as HTMLElement;
 dropzone();
 document.body.appendChild(root);
@@ -170,7 +200,7 @@ async function main() {
     render(() => <App />, root);
     if (import.meta.env.DEV) {
         win.showDevTools();
-        console.log("DevTools opened");
+        console.info("DevTools opened");
         nw.Window.getAll(function ([win]) {
             setTimeout(function () {
                 win.focus();

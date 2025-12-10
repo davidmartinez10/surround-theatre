@@ -10,7 +10,7 @@ export type ProperChildProcess = Promise<{ stdout: string, stderr: string }>
 export function proper_exec(command: string, cwd = process.cwd(),
     shell = os.platform() === "win32" ? "powershell"
         : "bash") {
-    console.log(`\n$ \x1b[33m${command}\x1b[0m\n`);
+    console.info(`\n$ \x1b[33m${command}\x1b[0m\n`);
 
     const [cmd, ...args] = command.replaceAll("\\ ", "\n").split(" ");
 
@@ -52,9 +52,12 @@ export function proper_exec(command: string, cwd = process.cwd(),
 export function proper_spawn(command: string, cwd = process.cwd(),
     shell = os.platform() === "win32" ? "powershell"
         : "bash") {
-    console.log(`\n$ \x1b[33m${command}\x1b[0m\n`);
 
+    // print command to console after parsing the command out of the command string to replace the absolute path with just the basename using regex
     const [cmd, ...args] = command.replaceAll("\\ ", "\n").split(" ");
+    const basename = cmd.match(/^.*?[\\/]([^\\/]+)$/)?.[1];
+    console.info(`\n$ \x1b[33m${basename} ${args.join(" ")}\x1b[0m\n`);
+
     return child_process.spawn(cmd,
         args.map(function callbackfn(
             value) { return value.replaceAll("\n", " "); }),

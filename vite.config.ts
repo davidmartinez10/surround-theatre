@@ -31,7 +31,10 @@ const nwts_plugin = {
     }
 
     if (!fs.existsSync("public")) { fs.mkdirSync("public"); }
+    if (!fs.existsSync("build")) { fs.mkdirSync("build"); }
     await fs.promises.writeFile(path.join("public", "package.json"),
+      JSON.stringify(manifest));
+    await fs.promises.writeFile(path.join("build", "package.json"),
       JSON.stringify(manifest));
     execSync(`npm install`,
       { stdio: "inherit", cwd: path.join(process.cwd(), "public") });
@@ -46,8 +49,9 @@ export default defineConfig({
     sourcemap: "inline",
     outDir: process.env.BUILD_DIRECTORY,
     emptyOutDir: true,
+    minify: false,
     rollupOptions: {
-      output: { format: "umd" }
+      output: { format: "umd", sourcemap: "inline" }
     },
   },
 });

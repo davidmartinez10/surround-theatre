@@ -1,31 +1,31 @@
-import child_process from "nwts-tools/lib/node/child_process";
 import http from "nwts-tools/lib/node/http";
 import os from "nwts-tools/lib/node/os";
 
-import { ffmpeg, start_ffmpeg_process} from "./ffmpeg";
-import { escape_path, proper_exec, proper_spawn } from "./proper_spawn";
-import {set_state, State, state} from "./db";
+import { start_ffmpeg_process } from "./ffmpeg";
+import { proper_exec } from "./proper_spawn";
+import { default_state, set_state, state } from "./db";
 import { unwrap } from "solid-js/store";
 
-
-const default_state: Partial<State> = {
-  hostname: "localhost",
-  port: 13231,
-  virtualizer: { type: "hrir", filename: "A3D.wav" },
-};
-set_state(default_state);
+set_state({ ...default_state });
 
 const server = http.createServer(async function media_server(req, res) {
-  const { path } = unwrap(state);
-  if (! path) return res.end();
+  const { path, video_codec } = unwrap(state);
+  let ffmpeg_process = await start_ffmpeg_process(path);
+  if (!path) return res.end();
   if (req.url !== "/stream.mkv") {
     return res.end();
   }
 
-  res.setHeader("Content-Type", "video/x-matroska; codecs=pcm");
+  var mime = `video/x-matroska; codecs=${video_codec ? `${video_codec},` : ""}pcm_s16le`;
+
+  console.log(mime);
+
+  res.setHeader("Content-Type", mime);
   //res.setHeader("Transfer-Encoding", "chunked");
   res.setHeader("Access-Control-Allow-Origin", "*");
-  let ffmpeg_process = await start_ffmpeg_process(path);
+  res.setHeader("Connection", "keep-alive");
+  res.setHeader("Keep-Alive", "timeout=60");
+
   ffmpeg_process.stdout?.pipe(res);
 
   function close() {
@@ -43,5 +43,5 @@ const server = http.createServer(async function media_server(req, res) {
 });
 
 server.listen(default_state.port, default_state.hostname, () => {
-  console.log(`Server running at http://${default_state.hostname}:${default_state.port}/`);
+  console.info(`Server running at http://${default_state.hostname}:${default_state.port}/`);
 });
