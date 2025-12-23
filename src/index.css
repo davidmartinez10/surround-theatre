@@ -22,39 +22,6 @@ video {
   background-color: black;
 }
 
-
-video::-webkit-media-controls-timeline {
-  display: none;
-}
-
-video::-webkit-media-controls-current-time-display {
-  display: none;
-}
-
-video::-webkit-media-controls-timeline-container {
-  display: block;
-}
-
-video::-webkit-media-controls-time-remaining-display {
-  display: none;
-}
-
-video::-webkit-media-controls-seek-back-button {
-  display: none;
-}
-
-video::-webkit-media-controls-seek-forward-button {
-  display: none;
-}
-
-video::-webkit-media-controls-rewind-button {
-  display: none;
-}
-
-video::-webkit-media-controls-toggle-closed-captions-button {
-  display: flex;
-}
-
 .marker {
   height: 96%;
   width: 0%;

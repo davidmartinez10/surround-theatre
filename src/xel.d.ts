@@ -120,5 +120,26 @@ declare module "solid-js" {
   }
 }
 
-//@ts-ignore
-declare module "xel/xel.js";
+// NW.js File extension
+declare global {
+  interface File {
+    path: string;
+  }
+
+  namespace NWJS {
+  interface Process {
+    cwd(): string;
+  }
+  }
+}
+
+// Extend NW.js types
+declare global {
+  namespace NWJS {
+  interface Process {
+    cwd(): string;
+  }
+  }
+}
+
+// Xel module declaration - using @ts-ignore in index.tsx instead

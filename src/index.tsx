@@ -1,6 +1,6 @@
 import style from "./App.module.css";
 import "./index.css";
-import { chapters_db, MusicTrack, queue_db, set_state, State, state, state_db } from "./util/db";
+import { MusicTrack, queue_db, set_state, State, state } from "./util/db";
 import "./util/media_server";
 
 import { render } from "solid-js/web";
@@ -48,7 +48,9 @@ function dropzone() {
         e.preventDefault();
         e.stopPropagation();
 
-        refresh_player(true);
+        process.nextTick(function callback() {
+            refresh_player(true);
+        });
 
         document.body.classList.remove(style.dragging);
 
@@ -163,7 +165,7 @@ function dropzone() {
             }
 
             queue_db.put({
-                track: `${index + 1}`.padStart(2, '0'),
+                track: `${index + 1}`.padStart(2, "0"),
                 name: metadata?.tags?.title || file.name,
                 path: file.path,
                 _id: file.path + Date.now(),
@@ -176,7 +178,7 @@ function dropzone() {
 }
 
 const win = nw.Window.get();
-win.on('new-win-policy', function (frame, url, policy) {
+win.on("new-win-policy", function (frame, url, policy) {
     console.error(url);
     nw.Shell.openExternal(url!);
     policy?.ignore(); // This prevents the new window from opening
@@ -187,11 +189,14 @@ dropzone();
 document.body.appendChild(root);
 
 async function main() {
+    // @ts-ignore
     var { default: xel } = await import("xel/xel.js");
 
     // xel.theme = "/xel/themes/cupertino-dark.css";
     // xel.iconsets = ["/xel/iconsets/material.svg"];
+    // @ts-ignore
     xel.theme = `file://${path.join(nw.process.cwd(), "themes/cupertino-dark.css")}`;
+    // @ts-ignore
     xel.icons = [`file://${path.join(nw.process.cwd(), "icons/fluent.svg")}`];
     xel.size = "medium";
     // get accent color from the OS

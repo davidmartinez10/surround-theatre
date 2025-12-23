@@ -125,6 +125,7 @@ export type State = {
   current_position: number;
   tracks: MusicTrack[];
   playing: boolean;
+  loading: boolean;
   path: string;
   static_bitmap: string;
   video_stream: number;
@@ -149,11 +150,6 @@ export const state_db
   = new PouchDB<SingleDocumentCollection<State>>("state", {adapter: "memory"});
 export const [state, set_state] = use_single_document_collection<State>(
   state_db as PouchDB.Database<SingleDocumentCollection<State>>);
-
-
-(globalThis as any).state = ()    => unwrap(state);
-(globalThis as any).audio_streams = () => unwrap(state).audio_streams;
-(globalThis as any).video_streams = () => unwrap(state).video_streams;
 
 
 type FilePath = string;
