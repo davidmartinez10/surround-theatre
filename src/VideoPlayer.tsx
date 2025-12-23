@@ -1,4 +1,5 @@
 import { bar } from "./Controls";
+import { ControlChars } from "./util/constants";
 import { queue, set_state, state } from "./util/db";
 import { unwrap } from "solid-js/store";
 
@@ -18,7 +19,7 @@ video.addEventListener("dblclick", function () {
   }
 });
 
-let interval: number | NodeJS.Timeout;
+var interval: number | NodeJS.Timeout;
 
 video.onplaying = function () {
   console.log("playing");
@@ -30,39 +31,60 @@ video.onplaying = function () {
     set_state({ current_position: unwrap(state).current_position + 1 });
   }, 1000);
   set_state({ playing: true, loading: false });
+  document.title = `${ControlChars.play} ${unwrap(state).path.split("/").pop()}`;
+};
+
+video.onvolumechange = function () {
+  console.log("volume change");
+  set_state({ volume: video.volume });
 };
 
 video.onended = function () {
   console.log("ended");
   clearInterval(interval);
-  set_state({ loading: false, playing: false });
+  set_state({ loading: false, playing: false, current_position: 0 });
+  document.title = `${ControlChars.stop} ${unwrap(state).path.split("/").pop()}`;
 };
 video.onwaiting = function () {
   console.log("waiting");
   clearInterval(interval);
   set_state({ loading: true });
+  document.title = `${ControlChars.waiting} ${unwrap(state).path.split("/").pop()}`;
 };
 
 video.onerror = function () {
   console.log("error");
   clearInterval(interval);
   set_state({ loading: false, playing: false });
+  if (unwrap(state).path.length > 0) {
+    document.title = `${ControlChars.error} ${unwrap(state).path.split("/").pop()}`;
+  }
 };
 
 video.onpause = function () {
   console.log("pause");
   clearInterval(interval);
   set_state({ loading: false, playing: false });
+  document.title = `${ControlChars.pause} ${unwrap(state).path.split("/").pop()}`;
 };
 video.onstalled = function () {
   console.log("stalled");
   clearInterval(interval);
   set_state({ loading: true, playing: false });
+  document.title = `${ControlChars.waiting} ${unwrap(state).path.split("/").pop()}`;
 };
 
-video.onload = function () {
-  console.log("loaded");
-  set_state({ loading: false });
+video.onplay = video.onplaying;
+
+video.onseeking = function () {
+  console.log("seeking");
+  clearInterval(interval);
+  set_state({ loading: true, playing: false });
+};
+video.onseeked = function () {
+  console.log("seeked");
+  clearInterval(interval);
+  set_state({ loading: false, playing: true });
 };
 
 export async function refresh_player(just_clear = false) {
@@ -72,6 +94,7 @@ export async function refresh_player(just_clear = false) {
       path: "",
       current_position: 0,
       current_track: 0,
+      duration: 0,
       tracks: [],
       loading: false,
       playing: false,

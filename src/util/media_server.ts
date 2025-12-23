@@ -19,10 +19,13 @@ const server = http.createServer(async function media_server(req, res) {
     : video_codec ? `${video_codec},`
                   : ""}pcm_s16le`;
   console.log(mime, "supported:", MediaSource.isTypeSupported(mime));
-
+  if (video_codec) {
+    console.log(video_codec, "video codec supported: ",
+                MediaSource.isTypeSupported(
+                  `${mime}`.replace(",pcm_s16le", "")));
+  }
 
   res.setHeader("Content-Type", mime);
-  // res.setHeader("Transfer-Encoding", "chunked");
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Connection", "keep-alive");
   res.setHeader("Keep-Alive", "timeout=60");

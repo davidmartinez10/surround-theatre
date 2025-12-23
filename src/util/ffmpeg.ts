@@ -7,7 +7,7 @@ import {Readable} from "stream";
 
 import {refresh_player} from "../VideoPlayer";
 
-import {LoudnormOutput, Meta, metadata_db, state, State} from "./db";
+import {LoudnormOutput, Meta, metadata_db, set_state, state, State} from "./db";
 import {filter_complex} from "./filters";
 import {escape_path, proper_exec, proper_spawn} from "./proper_spawn";
 
@@ -26,11 +26,11 @@ export async function get_metadata(filename: string) {
 }
 
 let loudnorm_cache = {} as {
-  [k: string]: Record<Partial<State["virtualizer"]["filename"]>, boolean>;
+  [k: string]: Record<Partial<State["binaural_renderer"]["filename"]>, boolean>;
 };
 
 export function loudnorm_first_pass(filename: string) {
-  const hrir = unwrap(state?.virtualizer);
+  const hrir = unwrap(state?.binaural_renderer);
   if (! filename || loudnorm_cache[filename]?.[unwrap(hrir)?.filename]) {
     return Promise.resolve();
   }
@@ -60,14 +60,16 @@ export function loudnorm_first_pass(filename: string) {
       "-hide_banner", "-err_detect", "ignore_err", "-i", escape_path(filename)
     ];
 
-    if (unwrap(state).virtualizer.type === "sofa") {
-      args.push("-af", `"sofalizer=sofa=${
-                         path.join(process.cwd(), "sofa",
-                                   unwrap(state).virtualizer.filename)}"`);
-    } else if (unwrap(state).virtualizer.type === "hrir") {
+    if (unwrap(state).binaural_renderer.type === "sofa") {
+      args.push("-af",
+                `"sofalizer=sofa=${
+                  path.join(process.cwd(), "sofa",
+                            unwrap(state).binaural_renderer.filename)}"`);
+    } else if (unwrap(state).binaural_renderer.type === "hrir") {
       args.push("-i",
-                escape_path(path.join(process.cwd(), "hrir",
-                                      unwrap(state).virtualizer.filename)),
+                escape_path(
+                  path.join(process.cwd(), "hrir",
+                            unwrap(state).binaural_renderer.filename)),
                 await filter_complex());
     }
 
@@ -106,10 +108,10 @@ export function loudnorm_first_pass(filename: string) {
       };
 
       if (metadata?.loudnorm) {
-        metadata.loudnorm[unwrap(state).virtualizer.filename] = loudnorm;
+        metadata.loudnorm[unwrap(state).binaural_renderer.filename] = loudnorm;
       } else {
         metadata.loudnorm = {
-          [unwrap(state).virtualizer.filename]: loudnorm,
+          [unwrap(state).binaural_renderer.filename]: loudnorm,
         } as Meta["loudnorm"];
       }
       if (loudnorm) {
@@ -119,7 +121,7 @@ export function loudnorm_first_pass(filename: string) {
         });
 
         if (filename === unwrap(state).path
-            && hrir === unwrap(state).virtualizer) {
+            && hrir === unwrap(state).binaural_renderer) {
           refresh_player();
         }
       }
@@ -144,7 +146,7 @@ export async function start_ffmpeg_process(filename: string):
     video_stream,
     audio_stream,
     reencode_video,
-    virtualizer,
+    binaural_renderer,
     path: state_path,
     current_position
   }
@@ -155,9 +157,9 @@ export async function start_ffmpeg_process(filename: string):
   } catch (error) { console.error(error); }
   let loudnorm = "";
 
-  if (metadata?.loudnorm?.[virtualizer.filename]) {
+  if (metadata?.loudnorm?.[binaural_renderer.filename]) {
     const { input_i, input_lra, input_tp, input_thresh, target_offset }
-    = metadata.loudnorm[virtualizer.filename];
+    = metadata.loudnorm[binaural_renderer.filename];
     loudnorm = `${loudness_settings}:measured_I=${input_i}:measured_LRA=${
       input_lra}:measured_TP=${input_tp}:measured_thresh=${
       input_thresh}:offset=${target_offset}:linear=true`;
@@ -176,15 +178,15 @@ export async function start_ffmpeg_process(filename: string):
   ];
 
 
-  if (virtualizer.type === "sofa") {
+  if (binaural_renderer.type === "sofa") {
     args.push("-af",
               `"sofalizer=sofa=${
-                path.join(process.cwd(), "sofa", virtualizer.filename)}"`,
+                path.join(process.cwd(), "sofa", binaural_renderer.filename)}"`,
               "-map", JSON.stringify(`0:${audio_stream}`));
-  } else if (virtualizer.type === "hrir") {
+  } else if (binaural_renderer.type === "hrir") {
     args.push("-i",
               escape_path(
-                path.join(process.cwd(), "hrir", virtualizer.filename)),
+                path.join(process.cwd(), "hrir", binaural_renderer.filename)),
               await filter_complex(loudnorm));
   }
 
@@ -220,11 +222,35 @@ export async function start_ffmpeg_process(filename: string):
     = proper_spawn(`${escape_path(ffmpeg)} ${args.join(" ")}`);
 
   if (ffmpeg_process_raw.stderr) {
-    (ffmpeg_process_raw.stderr as Readable)
-      .on("data", function data(chunk) { console.error(String(chunk)); });
+    var final_bitrate: number;
+    var bitrates = [] as number[];
+    (ffmpeg_process_raw.stderr as Readable).on("data", function data(chunk) {
+      console.debug(String(chunk));
+      if (final_bitrate) { return; }
+      const bitrate = String(chunk)
+                        .split(" ")
+                        .filter(Boolean)
+                        .find(e => e.startsWith("bitrate="))
+                        ?.split("=")[1]
+                        ?.replace("kbits/s", "")
+                      || "";
+      if (bitrate) {
+        const rate = Math.round(Number(bitrate) / 100) * 100;
+        if (bitrates.length > 3 && rate > 0) {
+          const [bitrate1, bitrate2, bitrate3] = bitrates.slice().reverse();
+          console.log(bitrate1, bitrate2, bitrate3);
+          if (([bitrate1, bitrate2, bitrate3].every(e => e === rate))) {
+            console.log({ bitrate: `~${rate}kbps` });
+            final_bitrate = rate;
+            return;
+          }
+        }
+        bitrates.push(rate);
+      }
+    });
   }
 
-  if (virtualizer.type === "hrir") { return ffmpeg_process_raw; }
+  if (binaural_renderer.type === "hrir") { return ffmpeg_process_raw; }
 
   return loudnorm_pipe(ffmpeg_process_raw, loudnorm);
 }
@@ -270,17 +296,8 @@ function loudnorm_pipe(ffmpeg_process_raw: ChildProcess,
 
   if (ffmpeg_process.stderr) {
     (ffmpeg_process.stderr as Readable)
-      .on("data", function data(chunk) { console.error(String(chunk)); });
+      .on("data", function data(chunk) { console.debug(String(chunk)); });
   }
-  ffmpeg_process_raw.on("exit", function() {
-    if (os.platform() === "win32") {
-      proper_exec(`taskkill /pid ${ffmpeg_process_raw.pid} /f /t`);
-      proper_exec(`taskkill /pid ${ffmpeg_process.pid} /f /t`);
-    } else {
-      proper_exec(`kill -9 ${ffmpeg_process_raw.pid}`);
-      proper_exec(`kill -9 ${ffmpeg_process.pid}`);
-    }
-  });
 
   return ffmpeg_process;
 }

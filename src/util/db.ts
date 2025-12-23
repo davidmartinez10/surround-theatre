@@ -31,6 +31,7 @@ interface AudioStreamInfo {
   channel_layout: string;
   bits_per_sample: number;
   initial_padding: number;
+  bit_rate?: number;
   r_frame_rate: string;
   avg_frame_rate: string;
   time_base: string;
@@ -119,10 +120,11 @@ export type VideoStreamInfo = {
 
 export type State = {
   audio_codec: string; video_codec: string;
-  virtualizer:
+  binaural_renderer:
     {type: "sofa" | "hrir", filename: `${string}.wav` | `${string}.sofa`};
   current_track: number;
   current_position: number;
+  volume: number;
   tracks: MusicTrack[];
   playing: boolean;
   loading: boolean;
@@ -142,8 +144,11 @@ export const default_state: Partial<State>
   = {
       hostname: "localhost",
       port: 13231,
-      virtualizer: {type: "hrir", filename: "Dolby Atmos.wav"},
+      binaural_renderer: {type: "hrir", filename: "Dolby Atmos.wav"},
       playing: false,
+      volume: 1,
+      loading: false,
+      path: "",
     };
 
 export const state_db
@@ -164,7 +169,7 @@ export interface LoudnormOutput {
 
 export type Meta = {
   _id: FilePath;
-  loudnorm: Record<State["virtualizer"]["filename"], LoudnormOutput>;
+  loudnorm: Record<State["binaural_renderer"]["filename"], LoudnormOutput>;
 };
 
 export const metadata_db = new PouchDB<Meta>("metadata_db");

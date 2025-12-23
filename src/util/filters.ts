@@ -78,11 +78,11 @@ const limited_pan_map = {
 } as const;
 
 export async function filter_complex(loudnorm?: string) {
-  const { audio_stream, virtualizer, audio_streams } = unwrap(state);
+  const { audio_stream, binaural_renderer, audio_streams } = unwrap(state);
   const { channels } = audio_streams[audio_stream || 0] || { channels: 0 };
 
-  const     hrir_metadata
-    = await get_metadata(path.join(process.cwd(), "hrir", virtualizer.filename))
+  const hrir_metadata = await get_metadata(
+    path.join(process.cwd(), "hrir", binaural_renderer.filename))
 
   console.log("hrir_metadata", hrir_metadata);
   const hrir_channels = hrir_metadata?.streams?.[0]?.channels;

@@ -16,10 +16,18 @@ x-select {
   width: -webkit-fill-available;
 }
 
+x-button {
+  min-width: 5ch;
+}
+
 video {
   width: 100%;
   height: 100%;
   background-color: black;
+}
+
+video::part(panel) {
+  display: none !important;
 }
 
 .marker {
