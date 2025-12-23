@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@ffprobe-installer/ffprobe':
-        specifier: ^2.1.2
-        version: 2.1.2
+        specifier: 1.4.1
+        version: 1.4.1
       '@lightrabbit/cue-parser':
         specifier: ^0.0.4
         version: 0.0.4
@@ -33,11 +33,11 @@ importers:
         specifier: 5.2.0
         version: 5.2.0
       nw:
-        specifier: 0.55.0-sdk
-        version: 0.55.0-sdk
+        specifier: 0.79.1-sdk
+        version: 0.79.1-sdk
       nwts-tools:
         specifier: ^0.5.3
-        version: 0.5.3(nw@0.55.0-sdk)
+        version: 0.5.3(nw@0.79.1-sdk)
       pouchdb-adapter-memory:
         specifier: ^9.0.0
         version: 9.0.0
@@ -56,9 +56,16 @@ importers:
       vite-plugin-solid:
         specifier: ^2.3.0
         version: 2.11.6(solid-js@1.9.5)(vite@3.2.11(@types/node@18.19.80))
+      ws:
+        specifier: ^8.18.3
+        version: 8.18.3
       xel:
-        specifier: 0.18.1
-        version: 0.18.1
+        specifier: 0.33.13
+        version: 0.33.13
+    devDependencies:
+      '@types/ws':
+        specifier: ^8.18.1
+        version: 8.18.1
 
 packages:
 
@@ -164,42 +171,41 @@ packages:
     cpu: [arm64]
     os: [darwin]
 
-  '@ffprobe-installer/darwin-x64@5.1.0':
-    resolution: {integrity: sha512-J+YGscZMpQclFg31O4cfVRGmDpkVsQ2fZujoUdMAAYcP0NtqpC49Hs3SWJpBdsGB4VeqOt5TTm1vSZQzs1NkhA==}
+  '@ffprobe-installer/darwin-x64@5.0.0':
+    resolution: {integrity: sha512-Zl0UkZ+wW/eyMKBPLTUCcNQch2VDnZz/cBn1DXv3YtCBVbYd9aYzGj4MImdxgWcoE0+GpbfbO6mKGwMq5HCm6A==}
     cpu: [x64]
     os: [darwin]
 
-  '@ffprobe-installer/ffprobe@2.1.2':
-    resolution: {integrity: sha512-ZNvwk4f2magF42Zji2Ese16SMj9BS7Fui4kRjg6gTYTxY3gWZNpg85n4MIfQyI9nimHg4x/gT6FVkp/bBDuBwg==}
-    engines: {node: '>=14.21.2'}
+  '@ffprobe-installer/ffprobe@1.4.1':
+    resolution: {integrity: sha512-3WJvxU0f4d7IOZdzoVCAj9fYtiQNC6E0521FJFe9iP5Ej8auTXU7TsrUzIAG1CydeQI+BnM3vGog92SCcF9KtA==}
 
-  '@ffprobe-installer/linux-arm64@5.2.0':
-    resolution: {integrity: sha512-X1VvWtlLs6ScP73biVLuHD5ohKJKsMTa0vafCESOen4mOoNeLAYbxOVxDWAdFz9cpZgRiloFj5QD6nDj8E28yQ==}
+  '@ffprobe-installer/linux-arm64@5.0.0':
+    resolution: {integrity: sha512-IwFbzhe1UydR849YXLPP0RMpHgHXSuPO1kznaCHcU5FscFBV5gOZLkdD8e/xrcC8g/nhKqy0xMjn5kv6KkFQlQ==}
     cpu: [arm64]
     os: [linux]
 
-  '@ffprobe-installer/linux-arm@5.2.0':
-    resolution: {integrity: sha512-PF5HqEhCY7WTWHtLDYbA/+rLS+rhslWvyBlAG1Fk8VzVlnRdl93o6hy7DE2kJgxWQbFaR3ZktPQGEzfkrmQHvQ==}
+  '@ffprobe-installer/linux-arm@5.0.0':
+    resolution: {integrity: sha512-mM1PPxP2UX5SUvhy0urcj5U8UolwbYgmnXA/eBWbW78k6N2Wk1COvcHYzOPs6c5yXXL6oshS2rZHU1kowigw7g==}
     cpu: [arm]
     os: [linux]
 
-  '@ffprobe-installer/linux-ia32@5.2.0':
-    resolution: {integrity: sha512-TFVK5sasXyXhbIG7LtPRDmtkrkOsInwKcL43iEvEw+D9vCS2rc//mn9/0Q+BR0UoJEiMK4+ApYr/3LLVUBPOCQ==}
+  '@ffprobe-installer/linux-ia32@5.0.0':
+    resolution: {integrity: sha512-c3bWlWEDMST59SAZycVh0oyc2eNS/CxxeRjoNryGRgqcZX3EJWJJQL1rAXbpQOMLMi8to1RqnmMuwPJgLLjjUA==}
     cpu: [ia32]
     os: [linux]
 
-  '@ffprobe-installer/linux-x64@5.2.0':
-    resolution: {integrity: sha512-D3UeqTLYPNs7pBWPLUYGehPdRVqU8eACox4OZy3pZUZatxye2YKlvBwEfaLdL1v2Z4FOAlLUhms0kY8m8kqSRA==}
+  '@ffprobe-installer/linux-x64@5.0.0':
+    resolution: {integrity: sha512-zgLnWJFvMGCaw1txGtz84sMEQt6mQUzdw86ih9S/kZOWnp06Gj/ams/EXxEkAxgAACCVM6/O0mkDe/6biY5tgA==}
     cpu: [x64]
     os: [linux]
 
-  '@ffprobe-installer/win32-ia32@5.1.0':
-    resolution: {integrity: sha512-5O3vOoNRxmut0/Nu9vSazTdSHasrr+zPT2B3Hm7kjmO3QVFcIfVImS6ReQnZeSy8JPJOqXts5kX5x/3KOX54XQ==}
+  '@ffprobe-installer/win32-ia32@5.0.0':
+    resolution: {integrity: sha512-NnDdAZD6ShFXzJeCkAFl2ZjAv7GcJWYudLA+0T/vjZwvskBop+sq1PGfdmVltfFDcdQiomoThRhn9Xiy9ZC71g==}
     cpu: [ia32]
     os: [win32]
 
-  '@ffprobe-installer/win32-x64@5.1.0':
-    resolution: {integrity: sha512-jMGYeAgkrdn4e2vvYt/qakgHRE3CPju4bn5TmdPfoAm1BlX1mY9cyMd8gf5vSzI8gH8Zq5WQAyAkmekX/8TSTg==}
+  '@ffprobe-installer/win32-x64@5.0.0':
+    resolution: {integrity: sha512-P4ZMRFxVMnfMsOyTfBM/+nkTodLeOUfXNPo+X1bKEWBiZxRErqX/IHS5sLA0yAH8XmtKZcL7Cu6M26ztGcQYxw==}
     cpu: [x64]
     os: [win32]
 
@@ -342,6 +348,9 @@ packages:
 
   '@types/responselike@1.0.3':
     resolution: {integrity: sha512-H/+L+UkTV33uf49PH5pCAUBVPNj2nDBXTN+qS1dOwyyg24l3CcicicCA7ca+HMvJBZcFgl5r8e+RR6elsb4Lyw==}
+
+  '@types/ws@8.18.1':
+    resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
 
   abstract-leveldown@2.7.2:
     resolution: {integrity: sha512-+OVvxH2rHVEhWLdbudP6p0+dNMXu8JA1CbhP19T8paTYAcX7oJ4OVjT+ZUVpv7mITxXHqDMej+GdqXBmXkw09w==}
@@ -1056,8 +1065,8 @@ packages:
     resolution: {integrity: sha512-eRtbOb1N5iyH0tkQDAoQ4Ipsp/5qSR79Dzrz8hEPxRX10RWWR/iQXdoKmBSRCThY1Fh5EhISDtpSc93fpxUniQ==}
     engines: {node: '>=12.13'}
 
-  merge@1.2.1:
-    resolution: {integrity: sha512-VjFo4P5Whtj4vsLzsYBu5ayHhoHJ0UqNm7ibvShmbmoz7tGi0vXaoJbGdB+GmDMLUdg8DpQXEIeVDAe8MaABvQ==}
+  merge@2.1.1:
+    resolution: {integrity: sha512-jz+Cfrg9GWOZbQAnDQ4hlVnQky+341Yk5ru8bZSe6sIDTCIg8n9i/u7hSQGSVOF3C7lH6mGtqjkiT9G4wFLL0w==}
 
   mimic-response@1.0.1:
     resolution: {integrity: sha512-j5EctnkH7amfV/q5Hgmoal1g2QHFJRraOtmx0JpIqkxhBhI/lJSl1nMpQ45hVarwNETOoWEimndZ4QK0RHxuxQ==}
@@ -1121,8 +1130,9 @@ packages:
     resolution: {integrity: sha512-4jbtZXNAsfZbAHiiqjLPBiCl16dES1zI4Hpzzxw61Tk+loF+sBDBKx1ICKKKwIqQ7M0mFn1TmkN7euSncWgHiQ==}
     engines: {node: '>=0.10.0'}
 
-  nw@0.55.0-sdk:
-    resolution: {integrity: sha512-WP9f8LLEUdcMGXwIk/kmadOmGJjYntF1BSTTDU0dNXnqKa7oKnidBSDGPR4doVplQ6g8uZLacF8aDLBXFEW9ww==}
+  nw@0.79.1-sdk:
+    resolution: {integrity: sha512-S4I9D6BRiFFRaEluM4oAEHJYRtS4QOp1PHx3rMyVwRDWeLtWevYMSEz4kg0KLsl+H6+5mpDJYR04OVg/lx4Rkg==}
+    engines: {node: v20.5.0}
     hasBin: true
 
   nwjs-ffmpeg-prebuilt@0.0.5:
@@ -1579,8 +1589,20 @@ packages:
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
 
-  xel@0.18.1:
-    resolution: {integrity: sha512-Pe5fMFv4nWOGSB2KQvtIeLWVnMvw+rdSGxGWvT0arcIzullaUbXe7RENPnmPVC5P+BDne+i3NOtcrwwdVssHkg==}
+  ws@8.18.3:
+    resolution: {integrity: sha512-PEIGCY5tSlUt50cqyMXfCzX+oOPqN0vuGqWzbcJ2xvnkzkq46oOpz7dQaTDBdfICb4N14+GARUDw2XV2N4tvzg==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+
+  xel@0.33.13:
+    resolution: {integrity: sha512-CRwbyghrYP18Wi/EvVV+qOsUhdac2m5MIhq3EGBI07gGb/Vvw7863kw6Kys/y1C5IAtcHFIGfcOOZ8l3u6zIug==}
 
   xtend@4.0.2:
     resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
@@ -1733,36 +1755,36 @@ snapshots:
   '@ffprobe-installer/darwin-arm64@5.0.1':
     optional: true
 
-  '@ffprobe-installer/darwin-x64@5.1.0':
+  '@ffprobe-installer/darwin-x64@5.0.0':
     optional: true
 
-  '@ffprobe-installer/ffprobe@2.1.2':
+  '@ffprobe-installer/ffprobe@1.4.1':
     optionalDependencies:
       '@ffprobe-installer/darwin-arm64': 5.0.1
-      '@ffprobe-installer/darwin-x64': 5.1.0
-      '@ffprobe-installer/linux-arm': 5.2.0
-      '@ffprobe-installer/linux-arm64': 5.2.0
-      '@ffprobe-installer/linux-ia32': 5.2.0
-      '@ffprobe-installer/linux-x64': 5.2.0
-      '@ffprobe-installer/win32-ia32': 5.1.0
-      '@ffprobe-installer/win32-x64': 5.1.0
+      '@ffprobe-installer/darwin-x64': 5.0.0
+      '@ffprobe-installer/linux-arm': 5.0.0
+      '@ffprobe-installer/linux-arm64': 5.0.0
+      '@ffprobe-installer/linux-ia32': 5.0.0
+      '@ffprobe-installer/linux-x64': 5.0.0
+      '@ffprobe-installer/win32-ia32': 5.0.0
+      '@ffprobe-installer/win32-x64': 5.0.0
 
-  '@ffprobe-installer/linux-arm64@5.2.0':
+  '@ffprobe-installer/linux-arm64@5.0.0':
     optional: true
 
-  '@ffprobe-installer/linux-arm@5.2.0':
+  '@ffprobe-installer/linux-arm@5.0.0':
     optional: true
 
-  '@ffprobe-installer/linux-ia32@5.2.0':
+  '@ffprobe-installer/linux-ia32@5.0.0':
     optional: true
 
-  '@ffprobe-installer/linux-x64@5.2.0':
+  '@ffprobe-installer/linux-x64@5.0.0':
     optional: true
 
-  '@ffprobe-installer/win32-ia32@5.1.0':
+  '@ffprobe-installer/win32-ia32@5.0.0':
     optional: true
 
-  '@ffprobe-installer/win32-x64@5.1.0':
+  '@ffprobe-installer/win32-x64@5.0.0':
     optional: true
 
   '@jridgewell/gen-mapping@0.3.8':
@@ -1958,6 +1980,10 @@ snapshots:
     dependencies:
       '@types/node': 18.19.80
 
+  '@types/ws@8.18.1':
+    dependencies:
+      '@types/node': 18.19.80
+
   abstract-leveldown@2.7.2:
     dependencies:
       xtend: 4.0.2
@@ -2006,7 +2032,7 @@ snapshots:
   bl@1.2.3:
     dependencies:
       readable-stream: 2.3.8
-      safe-buffer: 5.2.1
+      safe-buffer: 5.1.2
 
   brace-expansion@1.1.12:
     dependencies:
@@ -2493,7 +2519,7 @@ snapshots:
       is-retry-allowed: 1.2.0
       is-stream: 1.1.0
       lowercase-keys: 1.0.1
-      safe-buffer: 5.2.1
+      safe-buffer: 5.1.2
       timed-out: 4.0.1
       unzip-response: 2.0.1
       url-parse-lax: 1.0.0
@@ -2675,7 +2701,7 @@ snapshots:
     dependencies:
       is-what: 4.1.16
 
-  merge@1.2.1: {}
+  merge@2.1.1: {}
 
   mimic-response@1.0.1: {}
 
@@ -2716,13 +2742,13 @@ snapshots:
 
   number-is-nan@1.0.1: {}
 
-  nw@0.55.0-sdk:
+  nw@0.79.1-sdk:
     dependencies:
       chalk: 1.1.3
       decompress: 4.2.1
       download: 5.0.3
       file-exists: 2.0.0
-      merge: 1.2.1
+      merge: 2.1.1
       progress: 2.0.3
       rimraf: 2.7.1
       semver: 5.7.2
@@ -2735,10 +2761,10 @@ snapshots:
       got: 10.7.0
       yazl: 2.5.1
 
-  nwts-tools@0.5.3(nw@0.55.0-sdk):
+  nwts-tools@0.5.3(nw@0.79.1-sdk):
     dependencies:
       got: 12.6.1
-      nw: 0.55.0-sdk
+      nw: 0.79.1-sdk
       nwjs-ffmpeg-prebuilt: 0.0.5
       semver: 7.7.1
 
@@ -3090,7 +3116,7 @@ snapshots:
 
   tunnel-agent@0.6.0:
     dependencies:
-      safe-buffer: 5.2.1
+      safe-buffer: 5.1.2
 
   type-fest@0.10.0: {}
 
@@ -3195,7 +3221,9 @@ snapshots:
 
   wrappy@1.0.2: {}
 
-  xel@0.18.1: {}
+  ws@8.18.3: {}
+
+  xel@0.33.13: {}
 
   xtend@4.0.2: {}
 

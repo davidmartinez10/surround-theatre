@@ -1,75 +1,100 @@
 import path from "nwts-tools/lib/node/path";
-import { get_metadata } from "./ffmpeg";
+import {unwrap} from "solid-js/store";
+
 import {state} from "./db";
-import { unwrap } from "solid-js/store";
+import {get_metadata} from "./ffmpeg";
 
-enum Channel {
-  FL  = "FL",
-  FR  = "FR",
-  FC  = "FC",
-  LFE = "LFE",
-  BL  = "BL",
-  BR  = "BR",
-  SL  = "SL",
-  SR  = "SR",
-}
+const pan_map = {
+  8: [
+    "[1:0]pan=stereo|c0=c0|c1=c1[fl];",
+    "[1:0]pan=stereo|c0=c8|c1=c7[fr];",
+    "[1:0]pan=stereo|c0=c6|c1=c13[fc];",
+    "[1:0]pan=stereo|c0=c6|c1=c13[lfe];",
+    "[1:0]pan=stereo|c0=c4|c1=c5[bl];",
+    "[1:0]pan=stereo|c0=c12|c1=c11[br];",
+    "[1:0]pan=stereo|c0=c2|c1=c3[sl];",
+    "[1:0]pan=stereo|c0=c10|c1=c9[sr];",
+    "[0:a][fl][fr][fc][lfe][bl][br][sl][sr]",
+    "headphone=map=FL|FR|FC|LFE|BL|BR|SL|SR",
+  ].join(""),
+  6: [
+    "[1:0]pan=stereo|c0=c0|c1=c1[fl];",
+    "[1:0]pan=stereo|c0=c8|c1=c7[fr];",
+    "[1:0]pan=stereo|c0=c6|c1=c13[fc];",
+    "[1:0]pan=stereo|c0=c6|c1=c13[lfe];",
+    // "[1:0]pan=stereo|c0=c4|c1=c5[bl];",
+    // "[1:0]pan=stereo|c0=c12|c1=c11[br];",
+    "[1:0]pan=stereo|c0=c2|c1=c3[sl];",
+    "[1:0]pan=stereo|c0=c10|c1=c9[sr];",
+    "[0:a][fl][fr][fc][lfe][sl][sr]",
+    "headphone=map=FL|FR|FC|LFE|SL|SR",
+  ].join(""),
+  4: [
+    "[1:0]pan=stereo|c0=c0|c1=c1[fl];",
+    "[1:0]pan=stereo|c0=c8|c1=c7[fr];",
+    // "[1:0]pan=stereo|c0=c6|c1=c13[fc];",
+    //  "[1:0]pan=stereo|c0=c6|c1=c13[lfe];",
+    "[1:0]pan=stereo|c0=c4|c1=c5[bl];",
+    "[1:0]pan=stereo|c0=c12|c1=c11[br];",
+    // "[1:0]pan=stereo|c0=c2|c1=c3[sl];",
+    // "[1:0]pan=stereo|c0=c10|c1=c9[sr];"
+    "[0:a][fl][fr][bl][br]",
+    "headphone=map=FL|FR|BL|BR",
+  ].join(""),
+} as const;
 
-const channels = Object.values(Channel);
 
-export async function filter_complex(audio_stream: number|"a", loudnorm?: string) {
-  if ((await get_metadata(path.join(".", "hrir", unwrap(state).virtualizer.filename))).streams[0].channels < 8) {
-    const pan = [
-      "pan=16c",
-      "c0=c0",
-      "c1=c1",
-      "c2=c1",
-      "c3=c0",
-      "c4=c6",
-      "c5=c6",
-      "c6=c6",
-      "c7=c6",
-      "c8=c4",
-      "c9=c5",
-      "c10=c5",
-      "c11=c4",
-      "c12=c2",
-      "c13=c3",
-      "c14=c3",
-      "c15=c2",
-    ];
+const limited_pan_map = {
+  4: [
+    "[1:0]pan=stereo|c0=c0|c1=c1[fl];",
+    "[1:0]pan=stereo|c0=c1|c1=c0[fr];",
+    "[1:0]pan=stereo|c0=c4|c1=c5[bl];",
+    "[1:0]pan=stereo|c0=c5|c1=c4[br];",
+    "[0:a][fl][fr][bl][br]",
+    "headphone=map=FL|FR|BL|BR",
+  ].join(""),
+  6: [
+    "[1:0]pan=stereo|c0=c0|c1=c1[fl];",
+    "[1:0]pan=stereo|c0=c8|c1=c7[fr];",
+    "[1:0]pan=stereo|c0=c6|c1=c6[fc];",
+    "[1:0]pan=stereo|c0=c6|c1=c6[lfe];",
+    "[1:0]pan=stereo|c0=c4|c1=c5[bl];",
+    "[1:0]pan=stereo|c0=c5|c1=c4[br];",
+    "[0:a][fl][fr][fc][lfe][bl][br]",
+    "headphone=map=FL|FR|FC|LFE|BL|BR",
+  ].join(""),
+  8: [
+    "[1:0]pan=stereo|c0=c0|c1=c1[fl];",
+    "[1:0]pan=stereo|c0=c1|c1=c0[fr];",
+    "[1:0]pan=stereo|c0=c6|c1=c6[fc];",
+    "[1:0]pan=stereo|c0=c6|c1=c6[lfe];",
+    "[1:0]pan=stereo|c0=c4|c1=c5[bl];",
+    "[1:0]pan=stereo|c0=c5|c1=c4[br];",
+    "[1:0]pan=stereo|c0=c2|c1=c3[sl];",
+    "[1:0]pan=stereo|c0=c5|c1=c4[sr];",
+    "[0:a][fl][fr][fc][lfe][bl][br][sl][sr]",
+    "headphone=map=FL|FR|FC|LFE|BL|BR|SL|SR",
+  ].join(""),
+} as const;
 
-    const filter
-      = `[1:0]${pan.join("|")}[hrirs];[0:${audio_stream}][hrirs]headphone=map=${
-        channels.join(
-          "|")}:hrir=multich${loudnorm ? `,loudnorm=${loudnorm}` : ""}[hf]`;
+export async function filter_complex(loudnorm?: string) {
+  const { audio_stream, virtualizer, audio_streams } = unwrap(state);
+  const { channels } = audio_streams[audio_stream || 0] || { channels: 0 };
 
-    return `-filter_complex "${filter}" -map "[hf]:${audio_stream}"`;
-  } else {
-    const pan = [
-      "pan=16c",
-      "c0=c0",
-      "c1=c1",
-      "c2=c8",
-      "c3=c7",
-      "c4=c6",
-      "c5=c13",
-      "c6=c6",
-      "c7=c13",
-      "c8=c4",
-      "c9=c5",
-      "c10=c12",
-      "c11=c11",
-      "c12=c2",
-      "c13=c3",
-      "c14=c10",
-      "c15=c9",
-    ];
+  const     hrir_metadata
+    = await get_metadata(path.join(process.cwd(), "hrir", virtualizer.filename))
 
-    const filter
-      = `[1:0]${pan.join("|")}[hrirs];[0:${audio_stream}][hrirs]headphone=map=${
-        channels.join(
-          "|")}:hrir=multich${loudnorm ? `,loudnorm=${loudnorm}` : ""}[hf]`;
+  console.log("hrir_metadata", hrir_metadata);
+  const hrir_channels = hrir_metadata?.streams?.[0]?.channels;
+  console.log(hrir_channels, channels);
 
-    return `-filter_complex "${filter}" -map "[hf]:${audio_stream}"`;
-  }
+  const filter = [
+    hrir_channels < channels / 2 || hrir_channels < 8
+      ? (limited_pan_map[channels as keyof typeof limited_pan_map]
+         || limited_pan_map[8])
+      : (pan_map[channels as keyof typeof pan_map] || pan_map[8]),
+    loudnorm && `,loudnorm=${loudnorm}`, "[fh]"
+  ].join("");
+
+  return `-filter_complex "${filter}" -map "[fh]:${audio_stream}"`;
 }

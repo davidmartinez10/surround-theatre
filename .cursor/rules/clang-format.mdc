@@ -1,0 +1,56 @@
+---
+alwaysApply: true
+---
+## Code Style Rules (from .clang-format)
+
+When writing or modifying code, follow these formatting rules:
+
+**Indentation & Tabs:**
+- Use 2 spaces for indentation (never tabs)
+- Continuation indent: 2 spaces
+- Constructor initializer indent: 2 spaces
+
+**JavaScript/TypeScript Specific:**
+- Use double quotes for strings
+- Do not wrap imports
+- Class declarations are forbidden, new operator is avoided if there is a procedural interface
+- Never allow arrow functions.
+- Use `const`|`let`|`bar` lexically. Even if a variable is not going to be reassigned, assign mutable values to non-`const`
+
+**Spacing:**
+- Space before assignment operators: `x = y` (not `x=y`)
+- Space before parentheses only for control statements: `if (condition)` but `function()` not `function ()`
+- No spaces inside parentheses: `func(x, y)` not `func( x, y )`
+- No spaces inside square brackets: `arr[i]` not `arr[ i ]`
+- No spaces inside angle brackets: `Array<T>` not `Array< T >`
+- Space after logical NOT: `!x` (already correct)
+- No space after C-style casts
+- No space in empty parentheses: `func()` not `func( )`
+
+**Brace Style:**
+- Attach opening braces to the preceding token: `if (x) {` not `if (x)\n{`
+- Keep empty lines at start of blocks if present
+- Maximum 2 consecutive empty lines
+
+**Alignment:**
+- Align consecutive assignments: `x   = 1;` and `foo = 2;` (aligned)
+- Align consecutive declarations
+- Align trailing comments
+- Align operands in expressions
+
+**Line Breaks:**
+- Break before binary operators (operators at start of continuation line)
+- Break before ternary operators
+- Allow short functions, lambdas, blocks, if statements, and loops on single line when appropriate
+- Break multiline strings before the string starts
+- Break template declarations
+
+**Comments:**
+- Reflow comments to fit line width
+- 1 space before trailing comments
+- Align trailing comments
+
+**Other:**
+- Sort includes/imports
+- Access modifier offset: -2 (for C++ classes, if applicable)
+- Standard: C++11 (for C++ code)

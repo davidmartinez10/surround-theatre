@@ -1,27 +1,28 @@
 import http from "nwts-tools/lib/node/http";
 import os from "nwts-tools/lib/node/os";
+import {unwrap} from "solid-js/store";
 
-import { start_ffmpeg_process } from "./ffmpeg";
-import { proper_exec } from "./proper_spawn";
-import { default_state, set_state, state } from "./db";
-import { unwrap } from "solid-js/store";
+import {default_state, set_state, state} from "./db";
+import {start_ffmpeg_process} from "./ffmpeg";
+import {proper_exec} from "./proper_spawn";
 
-set_state({ ...default_state });
+set_state({...default_state });
 
 const server = http.createServer(async function media_server(req, res) {
   const { path, video_codec } = unwrap(state);
-  let ffmpeg_process = await start_ffmpeg_process(path);
-  if (!path) return res.end();
-  if (req.url !== "/stream.mkv") {
-    return res.end();
-  }
+  let ffmpeg_process          = await start_ffmpeg_process(path);
+  if (! path) return res.end();
+  if (req.url !== "/stream.mkv") { return res.end(); }
 
-  var mime = `video/x-matroska; codecs=${video_codec ? `${video_codec},` : ""}pcm_s16le`;
+  var mime = `video/x-matroska; codecs=${
+    video_codec.includes("264") || video_codec.includes("avc1") ? "avc1.64001E,"
+    : video_codec ? `${video_codec},`
+                  : ""}pcm_s16le`;
+  console.log(mime, "supported:", MediaSource.isTypeSupported(mime));
 
-  console.log(mime);
 
   res.setHeader("Content-Type", mime);
-  //res.setHeader("Transfer-Encoding", "chunked");
+  // res.setHeader("Transfer-Encoding", "chunked");
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Connection", "keep-alive");
   res.setHeader("Keep-Alive", "timeout=60");
@@ -43,5 +44,6 @@ const server = http.createServer(async function media_server(req, res) {
 });
 
 server.listen(default_state.port, default_state.hostname, () => {
-  console.info(`Server running at http://${default_state.hostname}:${default_state.port}/`);
+  console.info(`Server running at http://${default_state.hostname}:${
+    default_state.port}/`);
 });

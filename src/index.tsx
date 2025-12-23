@@ -3,7 +3,6 @@ import "./index.css";
 import { chapters_db, MusicTrack, queue_db, set_state, State, state, state_db } from "./util/db";
 import "./util/media_server";
 
-import os from "nwts-tools/lib/node/os";
 import { render } from "solid-js/web";
 
 import { manifest } from "../nwts.manifest";
@@ -15,6 +14,16 @@ import path from "nwts-tools/lib/node/path";
 import { escape_path, proper_exec, proper_spawn } from "./util/proper_spawn";
 import { refresh_player } from "./VideoPlayer";
 
+const colors = [
+    '#FF3B30',  // Red
+    '#FF9500',  // Orange
+    '#FFCC00',  // Yellow
+    '#34C759',  // Green
+    '#007AFF',  // Blue
+    '#5856D6',  // Violet
+    '#FF2D55'   // Magenta
+] as const;
+
 const { parse } = nw.require("@lightrabbit/cue-parser/lib/cue.js") as typeof import("@lightrabbit/cue-parser/lib/cue.js");
 
 function dropzone() {
@@ -25,7 +34,7 @@ function dropzone() {
 
         document.body.classList.add(style.dragging);
         e.dataTransfer!.dropEffect = "copy";
-    }
+    };
 
 
     document.body.ondragleave = function (e) {
@@ -33,7 +42,7 @@ function dropzone() {
         e.stopPropagation();
 
         document.body.classList.remove(style.dragging);
-    }
+    };
 
     document.body.ondrop = async function (e) {
         e.preventDefault();
@@ -81,8 +90,17 @@ function dropzone() {
             const metadata = await get_metadata(new_state.path);
             console.log("Metadata:", metadata);
             if (index === 0) {
+                if (metadata?.chapters?.length > 0) {
+                    new_state.tracks = metadata.chapters.map(function callbackfn(
+                        value: Record<string, (string & { title: string; })>) {
+                        return {
+                            start_time: Number(value.start_time),
+                            title: value?.tags?.title,
+                        } as MusicTrack;
+                    });
+                }
                 const audio_streams = metadata.streams.filter(function (
-                    e: { codec_type: string; }) { return e.codec_type === "audio" });
+                    e: { codec_type: string; }) { return e.codec_type === "audio"; });
 
                 const audio_stream = audio_streams
                     .sort(function (a: { channels: number; }, b: {
@@ -96,11 +114,9 @@ function dropzone() {
                 new_state.audio_codec = audio_stream?.codec_name || '';
 
                 const video_streams = metadata.streams.filter(function (
-                    e: { codec_type: string; }) { return e.codec_type === "video" });
+                    e: { codec_type: string; }) { return e.codec_type === "video"; });
 
                 const vstream = video_streams.slice().shift();
-
-                const reencode_video = !["h264", "vp8", "vp9", "mjpeg"].includes(vstream?.codec_name);
 
 
                 if (vstream?.codec_name) {
@@ -114,8 +130,8 @@ function dropzone() {
                         });
                     } else {
                         new_state.video_stream = vstream?.index;
-                        new_state.video_codec = reencode_video ? "h264" : vstream?.codec_name || '';
-                        new_state.reencode_video = reencode_video;
+                        new_state.reencode_video = !["h264", "vp8", "vp9", "hevc", "mjpeg", "mpeg2video", "mpeg4", "h263"].includes(vstream?.codec_name);
+                        new_state.video_codec = new_state.reencode_video ? "h264" : vstream?.codec_name || '';
                         new_state.video_streams = video_streams;
                     }
                 } else {
@@ -156,10 +172,10 @@ function dropzone() {
         }
 
 
-    }
+    };
 }
 
-const win = nw.Window.get()
+const win = nw.Window.get();
 win.on('new-win-policy', function (frame, url, policy) {
     console.error(url);
     nw.Shell.openExternal(url!);
@@ -171,25 +187,26 @@ dropzone();
 document.body.appendChild(root);
 
 async function main() {
-    const { default: xel } = await import("xel/xel.js");
+    var { default: xel } = await import("xel/xel.js");
 
-    switch (os.platform()) {
-        case "win32":
-            xel.theme = "node_modules/xel/themes/fluent-dark.css";
-            xel.iconsets = [
-                "node_modules/xel/iconsets/fluent-outlined.svg",
-            ];
-            break;
-        case "aix":
-            xel.theme = "node_modules/xel/themes/adwaita-dark.css";
-            xel.iconsets = ["node_modules/xel/iconsets/material.svg"];
-            break;
-        case "darwin":
-        default:
-            xel.theme = "node_modules/xel/themes/cupertino-dark.css";
-            xel.iconsets = ["node_modules/xel/iconsets/material.svg"];
+    // xel.theme = "/xel/themes/cupertino-dark.css";
+    // xel.iconsets = ["/xel/iconsets/material.svg"];
+    xel.theme = `file://${path.join(nw.process.cwd(), "themes/cupertino-dark.css")}`;
+    xel.icons = [`file://${path.join(nw.process.cwd(), "icons/fluent.svg")}`];
+    xel.size = "medium";
+    // get accent color from the OS
+    // xel.accentColor = "blue";
+    var accent = '#007AFF';
+    try {
+        const { stdout } = await proper_exec("defaults read -g AppleAccentColor");
+        accent = colors[parseInt(stdout) || 4];
+    } catch (error) {
+        console.error("Error getting accent color:", error);
     }
-    // xel.size = "small";
+    console.log("Accent:", accent);
+
+    xel.accentColor = accent;
+    // document.head.appendChild(<meta name="xel-accent-color" content={accent} /> as HTMLMetaElement);
 
     if (manifest?.name) {
         var title = document.querySelector("title");
