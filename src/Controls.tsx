@@ -44,7 +44,7 @@ bar.onclick = async function (e) {
   refresh_player();
 };
 
-function Controls({ class: className }: { class?: string }) {
+function Controls({ class: className }: { class?: string; }) {
   const previous = (
     <x-button disabled={(state?.path || "").length <= 0}>
       {ControlChars.previous}
@@ -299,7 +299,7 @@ function Controls({ class: className }: { class?: string }) {
           <x-card style="background-color: rgba(255, 255, 255, 0.1); padding: 0.5rem;">
             <x-label>Video Stream</x-label>
             <x-select
-              value={String(state?.video_stream)}
+              value={String(state?.video_stream ?? 0)}
               onchange={async function (event: any) {
                 await set_state({ video_stream: Number(event?.target?.value) });
                 refresh_player();
@@ -314,9 +314,8 @@ function Controls({ class: className }: { class?: string }) {
                         <x-label>
                           <x-label>{stream.codec_name}</x-label>
                           <x-label>
-                            {`${stream.height}${
-                              stream.field_order === "progressive" ? "p" : "i"
-                            }`}
+                            {`${stream.height}${stream.field_order === "progressive" ? "p" : "i"
+                              }`}
                           </x-label>
                         </x-label>
                       </x-menuitem>

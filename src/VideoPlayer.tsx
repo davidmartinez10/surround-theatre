@@ -90,6 +90,9 @@ video.onseeked = function () {
 export async function refresh_player(just_clear = false) {
   if (just_clear) {
     clearInterval(interval);
+    for (const el of document.querySelectorAll(".chapter-marker")) {
+      el.remove();
+    }
     await set_state({
       path: "",
       current_position: 0,
@@ -105,9 +108,6 @@ export async function refresh_player(just_clear = false) {
       video_streams: [],
       audio_streams: [],
     });
-    for (const el of document.querySelectorAll(".chapter-marker")) {
-      el.remove();
-    }
     video.pause();
     video.src = "";
     video.poster = "";
