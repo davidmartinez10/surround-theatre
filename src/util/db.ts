@@ -1,16 +1,15 @@
-import {unwrap} from "solid-js/store";
-
 import {PouchDB} from "./pouchdb";
-import {SingleDocumentCollection, use_collection, use_single_document_collection} from "./use_pouchdb_collection";
+import {SingleDocumentCollection, use_collection, use_single_document_collection,} from "./use_pouchdb_collection";
 
-export const queue_db
-  = new PouchDB<{track: string, name: string}>("queue", {adapter: "memory"});
-export const [queue] = use_collection(queue_db);
+export const queue_db = new PouchDB<{track: string; name: string}>("queue", {
+  adapter: "memory",
+});
+export const [queue]  = use_collection(queue_db);
 
-export const chapters_db = new PouchDB<
-  {chapter: string, name: string, start_time: number, file_path: string}>(
-  "chapters", {adapter: "memory"});
-export const [chapters] = use_collection(chapters_db);
+export const chapters_db = new PouchDB<{
+  chapter: string; name: string; start_time: number; file_path: string;
+}>("chapters", {adapter: "memory"});
+export const [chapters]  = use_collection(chapters_db);
 
 export type MusicTrack = {
   performer?: string|null;
@@ -121,7 +120,7 @@ export type VideoStreamInfo = {
 export type State = {
   audio_codec: string; video_codec: string;
   binaural_renderer:
-    {type: "sofa" | "hrir", filename: `${string}.wav` | `${string}.sofa`};
+    {type: "sofa" | "hrir"; filename: `${string}.wav` | `${string}.sofa`;};
   current_track: number;
   current_position: number;
   volume: number;
@@ -138,24 +137,27 @@ export type State = {
   duration: number;
   hostname: string;
   port: number;
-}
+};
 
-export const default_state: Partial<State>
-  = {
-      hostname: "localhost",
-      port: 13231,
-      binaural_renderer: {type: "hrir", filename: "Dolby Atmos.wav"},
-      playing: false,
-      volume: 1,
-      loading: false,
-      path: "",
-    };
+export const default_state: Partial<State> = {
+  hostname: "localhost",
+  port: 13231,
+  binaural_renderer: {
+    type: "sofa",
+    filename: "Viking · subject Z · 2.8 MB.sofa",
+  },
+  playing: false,
+  volume: 1,
+  loading: false,
+  path: "",
+};
 
-export const state_db
-  = new PouchDB<SingleDocumentCollection<State>>("state", {adapter: "memory"});
+export const state_db = new PouchDB<SingleDocumentCollection<State>>("state", {
+  adapter: "memory",
+});
 export const [state, set_state] = use_single_document_collection<State>(
-  state_db as PouchDB.Database<SingleDocumentCollection<State>>);
-
+  state_db as PouchDB.Database<SingleDocumentCollection<State>>,
+);
 
 type FilePath = string;
 

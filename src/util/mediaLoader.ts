@@ -8,11 +8,13 @@ import {MusicTrack, queue_db, set_state, State, state} from "./db";
 import {ffmpeg, get_metadata} from "./ffmpeg";
 import {escape_path, proper_exec} from "./proper_spawn";
 
-const { parse } = nw.require("@lightrabbit/cue-parser/lib/cue.js") as
-                  typeof import("@lightrabbit/cue-parser/lib/cue.js");
+const { parse } = nw.require(
+                    "@lightrabbit/cue-parser/lib/cue.js",
+                    ) as typeof import("@lightrabbit/cue-parser/lib/cue.js");
 
-export async function process_cue_file(file_path: string):
-  Promise<{path: string; tracks?: MusicTrack[]}> {
+export async function process_cue_file(
+  file_path: string,
+  ): Promise<{path: string; tracks?: MusicTrack[]}> {
   const data = await fs.promises.readFile(file_path, { encoding: "utf8" });
   const              o = parse(data);
 
@@ -23,7 +25,7 @@ export async function process_cue_file(file_path: string):
     const tracks = real_file.tracks!.map(function callbackfn(value) {
       const { title, performer } = value;
       const { min, sec }         = value.indexes![0].time;
-      const start_time           = sec + ((min * 60) || 0);
+      const start_time           = sec + (min * 60 || 0);
       return {
         title,
         performer,
@@ -58,7 +60,8 @@ export async function process_media_file(file_path: string): Promise<{
   // Process chapters/tracks from metadata
   if (metadata?.chapters?.length > 0) {
     new_state.tracks = metadata.chapters.map(function callbackfn(
-      value: Record<string, (string & { title: string; })>) {
+      value: Record<string, string&{ title: string }>,
+    ) {
       return {
         start_time: Number(value.start_time),
         title: value?.tags?.title,
@@ -71,9 +74,10 @@ export async function process_media_file(file_path: string): Promise<{
     e: { codec_type: string; }) { return e.codec_type === "audio"; });
 
   const audio_stream = audio_streams
-                         .sort(function(a: { channels: number; }, b: {
-                           channels: number;
-                         }) { return a.channels - b.channels; })
+                         .sort(function(
+                           a: { channels: number },
+                           b: { channels: number; },
+                         ) { return a.channels - b.channels; })
                          .slice()
                          .pop();
 
@@ -90,36 +94,44 @@ export async function process_media_file(file_path: string): Promise<{
   if (vstream?.codec_name) {
     if (vstream?.codec_name === "mjpeg") {
       process.nextTick(async function callback() {
-        const { stdout }
-        = await proper_exec(`${escape_path(ffmpeg)} -f mjpeg -i ${
-          JSON.stringify(file_path)} -an -f mjpeg -`);
+        const { stdout } = await proper_exec(
+          `${escape_path(ffmpeg)} -f mjpeg -i ${
+            JSON.stringify(
+              file_path,
+              )} -an -f mjpeg -`,
+        );
         new_state.static_bitmap = stdout.toString();
         const src               = URL.createObjectURL(new Blob([stdout]));
         video.poster            = src;
       });
     } else {
-      new_state.video_stream = vstream?.index;
-      new_state.reencode_video
-        = ! SupportedVideoCodecs.includes(vstream?.codec_name as any);
+      new_state.video_stream   = vstream?.index;
+      new_state.reencode_video = ! SupportedVideoCodecs.includes(
+        vstream?.codec_name as any,
+      );
+      console.log(vstream?.codec_name, new_state.reencode_video);
       new_state.video_codec
         = new_state.reencode_video ? "h264" : vstream?.codec_name || "";
       new_state.video_streams = video_streams;
     }
   } else {
     // Look for cover images
-    const     dir_contents
-      = await fs.promises.readdir(node_path.dirname(file_path));
-    const     images = dir_contents.filter(function predicate(value) {
+    const dir_contents = await fs.promises.readdir(
+      node_path.dirname(file_path),
+    );
+    const images = dir_contents.filter(function predicate(value) {
       return SupportedImageExtensions.includes(node_path.extname(value) as any);
-        });
+    });
 
     if (images.length > 0) {
       video.poster
         = "file://"
-          + node_path.join(node_path.dirname(file_path),
-                           images.find(function predicate(value) {
-                             return value.toLowerCase().includes("cover");
-                           }) || images[0]);
+          + node_path.join(
+            node_path.dirname(file_path),
+            images.find(function predicate(
+              value) { return value.toLowerCase().includes("cover"); })
+              || images[0],
+          );
     }
   }
 
@@ -128,14 +140,16 @@ export async function process_media_file(file_path: string): Promise<{
   return new_state as any;
 }
 
-export async function load_media_file(file: File,
-                                      index: number): Promise<void> {
+export async function load_media_file(
+  file: File,
+  index: number,
+  ): Promise<void> {
   let new_state = {...state } as State;
 
   if (node_path.extname(file.name) === ".cue") {
     const cue_data   = await process_cue_file(file.path);
     new_state.path   = cue_data.path;
-    new_state.tracks = cue_data.tracks || [] as MusicTrack[];
+    new_state.tracks = cue_data.tracks || ([] as MusicTrack[]);
   } else {
     new_state.path = file.path;
   }
@@ -150,7 +164,7 @@ export async function load_media_file(file: File,
       current_position: 0,
     });
 
-    refresh_player();
+    process.nextTick(refresh_player);
   }
 
   // Add to queue

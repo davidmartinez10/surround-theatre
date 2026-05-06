@@ -1,6 +1,5 @@
 import http from "nwts-tools/lib/node/http";
 import os from "nwts-tools/lib/node/os";
-import {unwrap} from "solid-js/store";
 
 import {default_state, set_state, state} from "./db";
 import {start_ffmpeg_process} from "./ffmpeg";
@@ -9,7 +8,7 @@ import {proper_exec} from "./proper_spawn";
 set_state({...default_state });
 
 const server = http.createServer(async function media_server(req, res) {
-  const { path, video_codec } = unwrap(state);
+  const { path, video_codec } = state;
   let ffmpeg_process          = await start_ffmpeg_process(path);
   if (! path) return res.end();
   if (req.url !== "/stream.mkv") { return res.end(); }
@@ -20,9 +19,13 @@ const server = http.createServer(async function media_server(req, res) {
                   : ""}pcm_s16le`;
   console.log(mime, "supported:", MediaSource.isTypeSupported(mime));
   if (video_codec) {
-    console.log(video_codec, "video codec supported: ",
-                MediaSource.isTypeSupported(
-                  `${mime}`.replace(",pcm_s16le", "")));
+    console.log(
+      video_codec,
+      "video codec supported: ",
+      MediaSource.isTypeSupported(
+        mime.replace("x-matroska", "mp4").replace(",pcm_s16le", ""),
+        ),
+    );
   }
 
   res.setHeader("Content-Type", mime);
@@ -47,6 +50,7 @@ const server = http.createServer(async function media_server(req, res) {
 });
 
 server.listen(default_state.port, default_state.hostname, () => {
-  console.info(`Server running at http://${default_state.hostname}:${
-    default_state.port}/`);
+  console.info(
+    `Server running at http://${default_state.hostname}:${default_state.port}/`,
+  );
 });

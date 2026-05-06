@@ -14,7 +14,7 @@ export const SupportedVideoCodecs = [
   "vp9",
   "hevc",
   "mjpeg",
-  "mpeg2video",
+  //  "mpeg2video",
   "mpeg4",
   "h263",
 ] as const;

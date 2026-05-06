@@ -1,5 +1,4 @@
 import path from "nwts-tools/lib/node/path";
-import {unwrap} from "solid-js/store";
 
 import {state} from "./db";
 import {get_metadata} from "./ffmpeg";
@@ -43,7 +42,6 @@ const pan_map = {
   ].join(""),
 } as const;
 
-
 const limited_pan_map = {
   4: [
     "[1:0]pan=stereo|c0=c0|c1=c1[fl];",
@@ -78,11 +76,12 @@ const limited_pan_map = {
 } as const;
 
 export async function filter_complex(loudnorm?: string) {
-  const { audio_stream, binaural_renderer, audio_streams } = unwrap(state);
+  const { audio_stream, binaural_renderer, audio_streams } = state;
   const { channels } = audio_streams[audio_stream || 0] || { channels: 0 };
 
   const hrir_metadata = await get_metadata(
-    path.join(process.cwd(), "hrir", binaural_renderer.filename))
+    path.join(process.cwd(), "hrir", binaural_renderer.filename),
+  );
 
   console.log("hrir_metadata", hrir_metadata);
   const hrir_channels = hrir_metadata?.streams?.[0]?.channels;
@@ -90,10 +89,11 @@ export async function filter_complex(loudnorm?: string) {
 
   const filter = [
     hrir_channels < channels / 2 || hrir_channels < 8
-      ? (limited_pan_map[channels as keyof typeof limited_pan_map]
-         || limited_pan_map[8])
-      : (pan_map[channels as keyof typeof pan_map] || pan_map[8]),
-    loudnorm && `,loudnorm=${loudnorm}`, "[fh]"
+      ? limited_pan_map[channels as keyof typeof limited_pan_map]
+          || limited_pan_map[8]
+      : pan_map[channels as keyof typeof pan_map] || pan_map[8],
+    loudnorm && `,loudnorm=${loudnorm}`,
+    "[fh]",
   ].join("");
 
   return `-filter_complex "${filter}" -map "[fh]:${audio_stream}"`;

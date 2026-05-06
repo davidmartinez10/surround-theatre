@@ -1,4 +1,4 @@
-import path from "nwts-tools/lib/node/path";
+import path from "path";
 
 import {colors} from "./constants";
 import {proper_exec} from "./proper_spawn";
@@ -17,10 +17,10 @@ export async function initialize_theme(): Promise<void> {
   // @ts-ignore
   var { default: xel } = await import("xel/xel.js");
 
-  // @ts-ignore
   xel.theme = `file://${path.join(process.cwd(), "themes/cupertino-dark.css")}`;
-  // @ts-ignore
+  xel.theme = "/themes/cupertino-dark.css";
   xel.icons = [`file://${path.join(process.cwd(), "icons/fluent.svg")}`];
+  xel.icons = ["/icons/fluent.svg"];
   xel.size  = "medium";
 
   const accent    = await get_accent_color();

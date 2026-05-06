@@ -1,13 +1,12 @@
 import { bar } from "./Controls";
 import { ControlChars } from "./util/constants";
-import { queue, set_state, state } from "./util/db";
-import { unwrap } from "solid-js/store";
+import { set_state, state } from "./util/db";
 
 export const video = (
   <video
     autoplay
     preload="auto"
-    src={`http://${unwrap(state).hostname}:${unwrap(state).port}/`}
+    src={`http://${state.hostname}:${state.port}/`}
   ></video>
 ) as HTMLVideoElement;
 
@@ -25,13 +24,13 @@ video.onplaying = function () {
   console.log("playing");
   clearInterval(interval);
   interval = setInterval(function callback() {
-    if (unwrap(state).current_position > unwrap(state).duration) {
+    if (state.current_position > state.duration) {
       return clearInterval(interval);
     }
-    set_state({ current_position: unwrap(state).current_position + 1 });
+    set_state({ current_position: state.current_position + 1 });
   }, 1000);
   set_state({ playing: true, loading: false });
-  document.title = `${ControlChars.play} ${unwrap(state).path.split("/").pop()}`;
+  document.title = `${ControlChars.play} ${state.path.split("/").pop()}`;
 };
 
 video.onvolumechange = function () {
@@ -41,23 +40,24 @@ video.onvolumechange = function () {
 
 video.onended = function () {
   console.log("ended");
+  set_state({ current_position: 0 });
+  set_state({ loading: false, playing: false });
   clearInterval(interval);
-  set_state({ loading: false, playing: false, current_position: 0 });
-  document.title = `${ControlChars.stop} ${unwrap(state).path.split("/").pop()}`;
+  document.title = `${ControlChars.stop} ${state.path.split("/").pop()}`;
 };
 video.onwaiting = function () {
   console.log("waiting");
   clearInterval(interval);
   set_state({ loading: true });
-  document.title = `${ControlChars.waiting} ${unwrap(state).path.split("/").pop()}`;
+  document.title = `${ControlChars.waiting} ${state.path.split("/").pop()}`;
 };
 
-video.onerror = function () {
-  console.log("error");
+video.onerror = function (e) {
+  console.log("error", e);
   clearInterval(interval);
   set_state({ loading: false, playing: false });
-  if (unwrap(state).path.length > 0) {
-    document.title = `${ControlChars.error} ${unwrap(state).path.split("/").pop()}`;
+  if (state.path.length > 0) {
+    document.title = `${ControlChars.error} ${state.path.split("/").pop()}`;
   }
 };
 
@@ -65,13 +65,14 @@ video.onpause = function () {
   console.log("pause");
   clearInterval(interval);
   set_state({ loading: false, playing: false });
-  document.title = `${ControlChars.pause} ${unwrap(state).path.split("/").pop()}`;
+  document.title = `${ControlChars.pause} ${state.path.split("/").pop()}`;
 };
+
 video.onstalled = function () {
   console.log("stalled");
   clearInterval(interval);
-  set_state({ loading: true, playing: false });
-  document.title = `${ControlChars.waiting} ${unwrap(state).path.split("/").pop()}`;
+  set_state({ loading: true });
+  document.title = `${ControlChars.waiting} ${state.path.split("/").pop()}`;
 };
 
 video.onplay = video.onplaying;
@@ -81,6 +82,7 @@ video.onseeking = function () {
   clearInterval(interval);
   set_state({ loading: true, playing: false });
 };
+
 video.onseeked = function () {
   console.log("seeked");
   clearInterval(interval);
@@ -115,20 +117,21 @@ export async function refresh_player(just_clear = false) {
     return;
   }
 
-  video.src = encodeURI(`http://${unwrap(state).hostname}:${unwrap(state).port}/stream.mkv`);
+  video.src = encodeURI(`http://${state.hostname}:${state.port}/stream.mkv`);
   set_state({ loading: true });
-  video.autoplay = unwrap(state).playing || true;
+  video.autoplay = state.playing || true;
 
-  if (unwrap(state).tracks?.length > 1) {
-    for (const [index, chapter] of unwrap(state).tracks.entries()) {
+  if (state.tracks?.length > 1) {
+    for (const [index, chapter] of state.tracks.entries()) {
       const m = (<div class="chapter-marker"></div>) as HTMLDivElement;
       m.style.position = "relative";
-      m.style.left = `${(chapter.start_time / unwrap(state).duration) * 100}%`;
-      m.style.width = `${(((unwrap(state).tracks[index + 1]?.start_time || unwrap(state).duration) -
-        chapter.start_time) /
-        unwrap(state).duration) *
+      m.style.left = `${(chapter.start_time / state.duration) * 100}%`;
+      m.style.width = `${
+        (((state.tracks[index + 1]?.start_time || state.duration) -
+          chapter.start_time) /
+          state.duration) *
         100
-        }%`;
+      }%`;
       if (chapter.title) {
         m.title = chapter.title;
       }
@@ -138,7 +141,7 @@ export async function refresh_player(just_clear = false) {
   return;
 }
 
-function VideoPlayer({ class: className }: { class?: string; }) {
+function VideoPlayer({ class: className }: { class?: string }) {
   return (
     <x-box
       class={className}
@@ -146,9 +149,7 @@ function VideoPlayer({ class: className }: { class?: string; }) {
     >
       {video}
       {state.loading ? (
-        <x-throbber
-          style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 999999;"
-        ></x-throbber>
+        <x-throbber style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 999999;"></x-throbber>
       ) : null}
     </x-box>
   );

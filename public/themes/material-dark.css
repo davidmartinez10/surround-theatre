@@ -7,7 +7,7 @@
  * @see https://www.figma.com/community/file/1035203688168086460
  */
 
-@import "./base.css";
+@import "/themes/base.css";
 
 /*****************************************************************************************************************/
 
@@ -18,11 +18,16 @@
   --selection-background-color: var(--material-secondary-fixed-dim-color);
   --autofill-background-color: color(srgb 0.95 0.93 0.89);
   --titlebar-color: auto;
-  --checkboard-background: linear-gradient(45deg, var(--material-scrim-color) 25%, #0000 25%) 0px 0px / 10px 10px,
-    linear-gradient(-45deg, var(--material-scrim-color) 25%, #0000 25%) 0px 5px / 10px 10px,
-    linear-gradient(45deg, #0000 75%, var(--material-scrim-color) 75%) 5px -5px / 10px 10px,
-    linear-gradient(-45deg, #0000 75%, var(--material-scrim-color) 75%) -5px 0px / 10px 10px, var(--material-outline-color);
-
+  --checkboard-background:
+    linear-gradient(45deg, var(--material-scrim-color) 25%, #0000 25%) 0px 0px /
+      10px 10px,
+    linear-gradient(-45deg, var(--material-scrim-color) 25%, #0000 25%) 0px
+      5px / 10px 10px,
+    linear-gradient(45deg, #0000 75%, var(--material-scrim-color) 75%)
+      5px -5px / 10px 10px,
+    linear-gradient(-45deg, #0000 75%, var(--material-scrim-color) 75%) -5px
+      0px / 10px 10px,
+    var(--material-outline-color);
 }
 
 /*****************************************************************************************************************/

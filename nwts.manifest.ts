@@ -10,24 +10,26 @@ const chromium_args = [
   // "--force-dark-mode",
   "--javascript-harmony",
   "--audio-process-high-priority",
-  // "--disable-background-timer-throttling",
-  // "--autoplay-policy=no-user-gesture-required",
-  // "--disable-gesture-requirement-for-presentation", "--disable-web-security",
-  // "--allow-insecure-localhost",
+  "--disable-background-timer-throttling",
+  "--autoplay-policy=no-user-gesture-required",
+  "--disable-gesture-requirement-for-presentation",
+  // "--disable-web-security",
+  "--allow-insecure-localhost",
   // "--mac-loopback-audio-for-cast",
   // "--mac-loopback-audio-for-screen-share",
   // "--enable-features=MacLoopbackAudioForCast,MacLoopbackAudioForScreenShare",
   // "--allow-file-access-from-files",
   // "--allow-file-access-from-file-urls",
-  // "--allow-running-insecure-content",
+  "--allow-running-insecure-content",
   // "--allow-running-insecure-content-from-file-urls",
   // "--allow-running-insecure-content-from-files",
   // "--allow-running-insecure-content-from-file-urls",
-  "--disable-features=ProcessPerSiteUpToMainFrameThreshold",
+  // "--disable-features=ProcessPerSiteUpToMainFrameThreshold",
   "--enable-features=NetworkServiceInProcess",
   "--autoplay-policy=no-user-gesture-required",
   //"--disable-get-user-media", "--disable-app-content-verification",
-  "--enable-usermedia-audio-capture --enable-blink-features=WebRTC"
+  "--enable-usermedia-audio-capture --enable-blink-features=WebRTC",
+  // "--enable-features=UnsafeWebGPU",
 ];
 
 export const manifest: NWJSManifest = {
@@ -46,7 +48,12 @@ export const manifest: NWJSManifest = {
   "chromium-args": chromium_args.join(" "),
   nodejs: true,
   "node-remote": ["http://127.0.0.1", "http://localhost", "<all_urls>"],
-  "host_permissions": ["http://*/*", "https://*/*"],
-  "permissions":
-    ["desktopCapture", "audioCapture", "tabCapture", "tabs", "<all_urls>"]
+  // host_permissions: ["http://*/*", "https://*/*"],
+  permissions: [
+    "desktopCapture",
+    "audioCapture",
+    "tabCapture",
+    "tabs",
+    "<all_urls>",
+  ],
 };

@@ -1,13 +1,10 @@
-import { Show, For } from "solid-js";
-import { unwrap } from "solid-js/store";
+import { For } from "solid-js";
 
-import { default_state, queue, set_state, state } from "./util/db";
+import { default_state, set_state, state } from "./util/db";
 import { refresh_player, video } from "./VideoPlayer";
-import { dolby_atmos } from "./util/logos";
 
 import fs from "nwts-tools/lib/node/fs";
 import path from "nwts-tools/lib/node/path";
-import dolbyLogo from "./public/dolbyatmos.svg?raw";
 import { ControlChars } from "./util/constants";
 
 function randomhexcolor(): string | undefined {
@@ -25,12 +22,13 @@ const marker = (
 export const bar = (<div class="bar">{marker}</div>) as HTMLDivElement;
 
 bar.onclick = async function (e) {
+  video.pause();
   const target = e.target as HTMLElement;
   console.error(
     target.getBoundingClientRect().x,
     bar.offsetLeft,
     e.offsetX,
-    bar.clientWidth
+    bar.clientWidth,
   );
   const fraction =
     (target.getBoundingClientRect().x - bar.offsetLeft + e.offsetX - 2) /
@@ -38,13 +36,13 @@ bar.onclick = async function (e) {
   await set_state({
     current_position:
       Math.round(
-        Math.min(Math.max(0, state.duration * fraction), state.duration)
+        Math.min(Math.max(0, state.duration * fraction), state.duration),
       ) || 0,
   });
-  refresh_player();
+  process.nextTick(refresh_player);
 };
 
-function Controls({ class: className }: { class?: string; }) {
+function Controls({ class: className }: { class?: string }) {
   const previous = (
     <x-button disabled={(state?.path || "").length <= 0}>
       {ControlChars.previous}
@@ -52,16 +50,17 @@ function Controls({ class: className }: { class?: string; }) {
   ) as HTMLButtonElement;
   previous.title = "Previous";
   previous.onclick = async function () {
+    video.pause();
     await set_state({
       current_position:
-        unwrap(state)
-          .tracks.slice()
+        state.tracks
+          .slice()
           .reverse()
           .find(function predicate(value) {
-            return value.start_time < unwrap(state).current_position;
+            return value.start_time < state.current_position;
           })?.start_time || 0,
     });
-    refresh_player();
+    process.nextTick(refresh_player);
   };
 
   const play = (
@@ -74,14 +73,14 @@ function Controls({ class: className }: { class?: string; }) {
   ) as HTMLButtonElement;
 
   play.onclick = async function () {
-    await set_state({ playing: !unwrap(state).playing });
-    if (unwrap(state).playing) {
+    await set_state({ playing: !state.playing });
+    if (state.playing) {
       video.pause();
     } else {
       if (video.paused) {
         video.play();
       } else {
-        refresh_player();
+        process.nextTick(refresh_player);
       }
     }
   };
@@ -93,15 +92,15 @@ function Controls({ class: className }: { class?: string; }) {
   ) as HTMLButtonElement;
   next.title = "Next";
   next.onclick = async function () {
+    video.pause();
     await set_state({
-      current_track: (unwrap(state).current_track ?? 0) + 1,
+      current_track: (state.current_track ?? 0) + 1,
       current_position:
         Math.round(
-          unwrap(state).tracks[(unwrap(state).current_track ?? 0) + 1]
-            ?.start_time || 0
+          state.tracks[(state.current_track ?? 0) + 1]?.start_time || 0,
         ) || 0,
     });
-    refresh_player();
+    process.nextTick(refresh_player);
   };
 
   const stop = (<x-button>{ControlChars.stop}</x-button>) as HTMLButtonElement;
@@ -111,8 +110,10 @@ function Controls({ class: className }: { class?: string; }) {
 
   stop.onclick = function () {
     console.log("stop");
-    refresh_player(true);
-    document.title = title;
+    process.nextTick(function () {
+      refresh_player(true);
+      document.title = title;
+    });
   };
 
   const playback_buttons = (
@@ -162,7 +163,7 @@ function Controls({ class: className }: { class?: string; }) {
         >
           {(filename) => (
             <x-menuitem value={filename}>
-              {dolby_atmos}
+              {/* {dolby_atmos} */}
               <x-label>
                 {path.basename(filename, path.extname(filename))}
               </x-label>
@@ -191,13 +192,14 @@ function Controls({ class: className }: { class?: string; }) {
   ) as HTMLSelectElement;
 
   binaural_renderer.onchange = async function (event: any) {
+    video.pause();
     await set_state({
       binaural_renderer: {
         type: path.extname(event?.target?.value) === ".wav" ? "hrir" : "sofa",
         filename: event?.target?.value,
       },
     });
-    refresh_player();
+    process.nextTick(refresh_player);
   };
 
   const volume_slider = (
@@ -265,8 +267,9 @@ function Controls({ class: className }: { class?: string; }) {
             <x-select
               value={String(state?.audio_stream)}
               onchange={async function (event: any) {
+                video.pause();
                 await set_state({ audio_stream: Number(event?.target?.value) });
-                refresh_player();
+                process.nextTick(refresh_player);
               }}
             >
               <x-menu>
@@ -301,8 +304,9 @@ function Controls({ class: className }: { class?: string; }) {
             <x-select
               value={String(state?.video_stream ?? 0)}
               onchange={async function (event: any) {
+                video.pause();
                 await set_state({ video_stream: Number(event?.target?.value) });
-                refresh_player();
+                process.nextTick(refresh_player);
               }}
             >
               <x-menu>
@@ -314,8 +318,9 @@ function Controls({ class: className }: { class?: string; }) {
                         <x-label>
                           <x-label>{stream.codec_name}</x-label>
                           <x-label>
-                            {`${stream.height}${stream.field_order === "progressive" ? "p" : "i"
-                              }`}
+                            {`${stream.height}${
+                              stream.field_order === "progressive" ? "p" : "i"
+                            }`}
                           </x-label>
                         </x-label>
                       </x-menuitem>
