@@ -1,4 +1,4 @@
-import path from "path";
+import path from "nwts-tools/lib/node/path";
 
 import {colors} from "./constants";
 import {proper_exec} from "./proper_spawn";

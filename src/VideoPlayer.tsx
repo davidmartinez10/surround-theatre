@@ -56,7 +56,7 @@ video.onerror = function (e) {
   console.log("error", e);
   clearInterval(interval);
   set_state({ loading: false, playing: false });
-  if (state.path.length > 0) {
+  if (state.path?.length > 0) {
     document.title = `${ControlChars.error} ${state.path.split("/").pop()}`;
   }
 };

@@ -74,10 +74,9 @@ export async function process_media_file(file_path: string): Promise<{
     e: { codec_type: string; }) { return e.codec_type === "audio"; });
 
   const audio_stream = audio_streams
-                         .sort(function(
-                           a: { channels: number },
-                           b: { channels: number; },
-                         ) { return a.channels - b.channels; })
+                         .sort(function(a: { channels: number }, b: {
+                           channels: number
+                         }) { return a.channels - b.channels; })
                          .slice()
                          .pop();
 
@@ -123,7 +122,7 @@ export async function process_media_file(file_path: string): Promise<{
       return SupportedImageExtensions.includes(node_path.extname(value) as any);
     });
 
-    if (images.length > 0) {
+    if (images?.length > 0) {
       video.poster
         = "file://"
           + node_path.join(

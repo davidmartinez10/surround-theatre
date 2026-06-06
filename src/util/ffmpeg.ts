@@ -52,10 +52,9 @@ export function loudnorm_first_pass(filename: string) {
                                .filter(function(e: {
                                  codec_type: string
                                }) { return e.codec_type === "audio"; })
-                               .sort(function(
-                                 a: { channels: number },
-                                 b: { channels: number; },
-                               ) { return a.channels - b.channels; })
+                               .sort(function(a: { channels: number }, b: {
+                                 channels: number
+                               }) { return a.channels - b.channels; })
                                .pop()
                                ?.index;
 
@@ -305,7 +304,7 @@ export async function start_ffmpeg_process(
                       || "";
       if (bitrate) {
         const rate = Math.round(Number(bitrate) / 100) * 100;
-        if (bitrates.length > 3 && rate > 0) {
+        if (bitrates?.length > 3 && rate > 0) {
           const [bitrate1, bitrate2, bitrate3] = bitrates.slice().reverse();
           console.log(bitrate1, bitrate2, bitrate3);
           if ([bitrate1, bitrate2, bitrate3].every((e) => e === rate)) {

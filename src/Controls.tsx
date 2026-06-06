@@ -252,7 +252,7 @@ function Controls({ class: className }: { class?: string }) {
         vertical={false}
         style="justify-content: space-between; width: -webkit-fill-available;"
       >
-        {state.path.length > 0 ? playback_buttons : null}
+        {state.path?.length > 0 ? playback_buttons : null}
         {volume_slider}
         {state.duration > 0 ? time_display : null}
       </x-box>
