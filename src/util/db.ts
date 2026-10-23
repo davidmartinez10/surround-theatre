@@ -144,7 +144,7 @@ export const default_state: Partial<State> = {
   port: 13231,
   binaural_renderer: {
     type: "sofa",
-    filename: "Viking · subject Z · 2.8 MB.sofa",
+    filename: "D2 · 48K 24bit · 256tap FIR.sofa",
   },
   playing: false,
   volume: 1,

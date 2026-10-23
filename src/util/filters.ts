@@ -51,16 +51,6 @@ const limited_pan_map = {
     "[0:a][fl][fr][bl][br]",
     "headphone=map=FL|FR|BL|BR",
   ].join(""),
-  6: [
-    "[1:0]pan=stereo|c0=c0|c1=c1[fl];",
-    "[1:0]pan=stereo|c0=c8|c1=c7[fr];",
-    "[1:0]pan=stereo|c0=c6|c1=c6[fc];",
-    "[1:0]pan=stereo|c0=c6|c1=c6[lfe];",
-    "[1:0]pan=stereo|c0=c4|c1=c5[bl];",
-    "[1:0]pan=stereo|c0=c5|c1=c4[br];",
-    "[0:a][fl][fr][fc][lfe][bl][br]",
-    "headphone=map=FL|FR|FC|LFE|BL|BR",
-  ].join(""),
   8: [
     "[1:0]pan=stereo|c0=c0|c1=c1[fl];",
     "[1:0]pan=stereo|c0=c1|c1=c0[fr];",
@@ -77,15 +67,17 @@ const limited_pan_map = {
 
 export async function filter_complex(loudnorm?: string) {
   const { audio_stream, binaural_renderer, audio_streams } = state;
-  const { channels } = audio_streams[audio_stream || 0] || { channels: 0 };
+  const { channels }
+  = audio_streams.find(function(e) { return e.index === audio_stream; })
+    || { channels: 0 };
 
   const hrir_metadata = await get_metadata(
     path.join(process.cwd(), "hrir", binaural_renderer.filename),
   );
 
-  console.log("hrir_metadata", hrir_metadata);
   const hrir_channels = hrir_metadata?.streams?.[0]?.channels;
-  console.log(hrir_channels, channels);
+
+  console.log(channels, hrir_channels);
 
   const filter = [
     hrir_channels < channels / 2 || hrir_channels < 8

@@ -9,7 +9,7 @@ x-card {
   padding: inherit;
   box-sizing: border-box;
   min-height: fit-content;
-  min-width: fit-content
+  min-width: fit-content;
 }
 
 x-select {
@@ -43,7 +43,6 @@ video::part(panel) {
   border-right: 1px solid var(--foreground-color);
   grid-area: inner;
 }
-
 
 .bar {
   background-color: var(--background-color);

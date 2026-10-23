@@ -73,6 +73,7 @@ export async function process_media_file(file_path: string): Promise<{
   const audio_streams = metadata.streams.filter(function(
     e: { codec_type: string; }) { return e.codec_type === "audio"; });
 
+  console.log("audio_streams", audio_streams);
   const audio_stream = audio_streams
                          .sort(function(a: { channels: number }, b: {
                            channels: number
@@ -81,7 +82,7 @@ export async function process_media_file(file_path: string): Promise<{
                          .pop();
 
   new_state.audio_streams = audio_streams;
-  new_state.audio_stream  = audio_stream?.index || 0;
+  new_state.audio_stream  = audio_stream?.index;
   new_state.audio_codec   = audio_stream?.codec_name || "";
 
   // Process video streams
@@ -143,7 +144,7 @@ export async function load_media_file(
   file: File,
   index: number,
   ): Promise<void> {
-  let new_state = {...state } as State;
+  let new_state = {...state, video_streams: [], audio_streams: [] } as State;
 
   if (node_path.extname(file.name) === ".cue") {
     const cue_data   = await process_cue_file(file.path);

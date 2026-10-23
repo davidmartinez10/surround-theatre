@@ -3,11 +3,7 @@ import { ControlChars } from "./util/constants";
 import { set_state, state } from "./util/db";
 
 export const video = (
-  <video
-    autoplay
-    preload="auto"
-    src={`http://${state.hostname}:${state.port}/`}
-  ></video>
+  <video autoplay preload="auto"></video>
 ) as HTMLVideoElement;
 
 video.addEventListener("dblclick", function () {
@@ -45,6 +41,7 @@ video.onended = function () {
   clearInterval(interval);
   document.title = `${ControlChars.stop} ${state.path.split("/").pop()}`;
 };
+
 video.onwaiting = function () {
   console.log("waiting");
   clearInterval(interval);
@@ -52,13 +49,20 @@ video.onwaiting = function () {
   document.title = `${ControlChars.waiting} ${state.path.split("/").pop()}`;
 };
 
+var errored = false;
+
 video.onerror = function (e) {
+  errored = true;
   console.log("error", e);
   clearInterval(interval);
-  set_state({ loading: false, playing: false });
+  set_state({ playing: false });
   if (state.path?.length > 0) {
     document.title = `${ControlChars.error} ${state.path.split("/").pop()}`;
   }
+  if (!errored) {
+    setTimeout(refresh_player, 500);
+  }
+  errored = false;
 };
 
 video.onpause = function () {
@@ -90,8 +94,9 @@ video.onseeked = function () {
 };
 
 export async function refresh_player(just_clear = false) {
+  console.log("Refreshing player");
+  clearInterval(interval);
   if (just_clear) {
-    clearInterval(interval);
     for (const el of document.querySelectorAll(".chapter-marker")) {
       el.remove();
     }

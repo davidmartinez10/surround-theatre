@@ -152,6 +152,23 @@ function Controls({ class: className }: { class?: string }) {
       }
     >
       <x-menu>
+        <x-label>Sofalizer</x-label>
+        <For
+          each={fs
+            .readdirSync("./sofa")
+            .filter(function predicate(value) {
+              return path.extname(value) === ".sofa";
+            })
+            .sort()}
+        >
+          {(filename) => (
+            <x-menuitem value={filename}>
+              <x-label>
+                {path.basename(filename, path.extname(filename))}
+              </x-label>
+            </x-menuitem>
+          )}
+        </For>
         <x-label>HRIR</x-label>
         <For
           each={fs
@@ -170,23 +187,6 @@ function Controls({ class: className }: { class?: string }) {
             </x-menuitem>
           )}
         </For>
-        <x-label>Sofalizer</x-label>
-        <For
-          each={fs
-            .readdirSync("./sofa")
-            .filter(function predicate(value) {
-              return path.extname(value) === ".sofa";
-            })
-            .sort()}
-        >
-          {(filename) => (
-            <x-menuitem value={filename}>
-              <x-label>
-                {path.basename(filename, path.extname(filename))}
-              </x-label>
-            </x-menuitem>
-          )}
-        </For>
       </x-menu>
     </x-select>
   ) as HTMLSelectElement;
@@ -199,13 +199,15 @@ function Controls({ class: className }: { class?: string }) {
         filename: event?.target?.value,
       },
     });
-    process.nextTick(refresh_player);
+    if (state.path?.length > 0) {
+      process.nextTick(refresh_player);
+    }
   };
 
   const volume_slider = (
     <x-box
       vertical={false}
-      style="justify-content: center; width: -webkit-fill-available; gap: 0.5rem;"
+      style="margin: auto; justify-content: center; height: -webkit-fill-available; gap: 0.5rem;"
     >
       <x-label
         onclick={function () {
@@ -238,6 +240,18 @@ function Controls({ class: className }: { class?: string }) {
     </x-box>
   ) as HTMLInputElement;
 
+  volume_slider.onwheel = function (event) {
+    console.log("scroll", event);
+    console.log(state.volume, event.deltaY);
+    if (event.deltaY < 0) {
+      set_state({ volume: Math.min(state.volume + 0.1, 1) });
+      video.volume = Math.min(state.volume + 0.1, 1);
+    } else if (event.deltaY > 0) {
+      set_state({ volume: Math.max(state.volume - 0.1, 0) });
+      video.volume = Math.max(state.volume - 0.1, 0);
+    }
+  };
+
   return (
     <x-box
       class={className}
@@ -268,7 +282,9 @@ function Controls({ class: className }: { class?: string }) {
               value={String(state?.audio_stream)}
               onchange={async function (event: any) {
                 video.pause();
-                await set_state({ audio_stream: Number(event?.target?.value) });
+                await set_state({
+                  audio_stream: Number(event?.target?.value),
+                });
                 process.nextTick(refresh_player);
               }}
             >

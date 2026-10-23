@@ -7,7 +7,7 @@
 
 .grid {
   display: grid;
-  /* grid-template-rows: repeat(2, 1fr); */
+  grid-template-rows: 1fr auto;
   gap: 0.3rem;
   width: 100vw;
   height: 100vh;
@@ -37,5 +37,4 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   transform: scale(0.8);
   border: 2px dashed #333;
-
 }
