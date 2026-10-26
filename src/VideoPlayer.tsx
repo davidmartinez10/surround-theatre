@@ -23,7 +23,15 @@ video.onplaying = function () {
     if (state.current_position > state.duration) {
       return clearInterval(interval);
     }
-    set_state({ current_position: state.current_position + 1 });
+    const new_position = state.current_position + 1;
+    if (new_position > state.tracks[state.current_track + 1].start_time) {
+      set_state({
+        current_track: (state.current_track ?? 0) + 1,
+        current_position: new_position,
+      });
+    } else {
+      set_state({ current_position: new_position });
+    }
   }, 1000);
   set_state({ playing: true, loading: false });
   document.title = `${ControlChars.play} ${state.path.split("/").pop()}`;
@@ -122,14 +130,12 @@ export async function refresh_player(just_clear = false) {
     return;
   }
 
-  video.src = encodeURI(`http://${state.hostname}:${state.port}/stream.mkv`);
-  set_state({ loading: true });
-  video.autoplay = state.playing || true;
-
+  console.log("state", state.tracks.length);
   if (state.tracks?.length > 1) {
     for (const [index, chapter] of state.tracks.entries()) {
       const m = (<div class="chapter-marker"></div>) as HTMLDivElement;
       m.style.position = "relative";
+      console.log(state.duration);
       m.style.left = `${(chapter.start_time / state.duration) * 100}%`;
       m.style.width = `${
         (((state.tracks[index + 1]?.start_time || state.duration) -
@@ -143,6 +149,11 @@ export async function refresh_player(just_clear = false) {
       bar.appendChild(m);
     }
   }
+
+  video.src = encodeURI(`http://${state.hostname}:${state.port}/stream.mkv`);
+  set_state({ loading: true });
+  video.autoplay = state.playing || true;
+
   return;
 }
 

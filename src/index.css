@@ -30,10 +30,22 @@ video::part(panel) {
   display: none !important;
 }
 
+video::-webkit-media-controls {
+  display: none !important;
+}
+
+/* More specific (sometimes needed) */
+video::-webkit-media-controls-panel,
+video::-webkit-media-controls-play-button,
+video::-webkit-media-controls-start-playback-button {
+  display: none !important;
+  -webkit-appearance: none;
+}
+
 .marker {
   height: 96%;
   width: 0%;
-  /* z-index: 9999999; */
+  z-index: 9999999;
   border-right: 1px solid var(--accent-color);
   grid-area: inner;
 }

@@ -33,11 +33,18 @@ bar.onclick = async function (e) {
   const fraction =
     (target.getBoundingClientRect().x - bar.offsetLeft + e.offsetX - 2) /
     bar.clientWidth;
+  const pos =
+    Math.round(
+      Math.min(Math.max(0, state.duration * fraction), state.duration),
+    ) || 0;
+
+  const x = state.tracks.findIndex(function (chapter) {
+    return pos < chapter.start_time;
+  });
+
   await set_state({
-    current_position:
-      Math.round(
-        Math.min(Math.max(0, state.duration * fraction), state.duration),
-      ) || 0,
+    current_position: pos,
+    current_track: x === -1 ? state.tracks.length - 1 : x - 1,
   });
   process.nextTick(refresh_player);
 };

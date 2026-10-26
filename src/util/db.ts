@@ -150,11 +150,22 @@ export const default_state: Partial<State> = {
   volume: 1,
   loading: false,
   path: "",
+  current_position: 0,
+  current_track: 0,
+  duration: 0,
+  tracks: [],
+  video_codec: "",
+  audio_codec: "",
+  video_stream: NaN,
+  audio_stream: NaN,
+  video_streams: [],
+  audio_streams: [],
 };
 
 export const state_db = new PouchDB<SingleDocumentCollection<State>>("state", {
   adapter: "memory",
 });
+
 export const [state, set_state] = use_single_document_collection<State>(
   state_db as PouchDB.Database<SingleDocumentCollection<State>>,
 );
