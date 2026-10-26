@@ -30,7 +30,6 @@ export function initialize_dropzone(): void {
     const files = e.dataTransfer!.files;
 
     for (const [index, file] of Array.from(files).entries()) {
-      refresh_player(true);
       await load_media_file(file, index);
     }
   };
