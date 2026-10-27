@@ -49,7 +49,7 @@ bar.onclick = async function (e) {
   process.nextTick(refresh_player);
 };
 
-function Controls({ class: className }: { class?: string }) {
+function Controls({ class: className }: { class?: string; }) {
   const previous = (
     <x-button disabled={(state?.path || "").length <= 0}>
       {ControlChars.previous}
@@ -341,9 +341,8 @@ function Controls({ class: className }: { class?: string }) {
                         <x-label>
                           <x-label>{stream.codec_name}</x-label>
                           <x-label>
-                            {`${stream.height}${
-                              stream.field_order === "progressive" ? "p" : "i"
-                            }`}
+                            {`${stream.height}${stream.field_order === "progressive" ? "p" : "i"
+                              }`}
                           </x-label>
                         </x-label>
                       </x-menuitem>
