@@ -24,7 +24,7 @@ video.onplaying = function () {
       return clearInterval(interval);
     }
     const new_position = state.current_position + 1;
-    if (state.tracks.length > 0 && new_position > state.tracks[state.current_track + 1].start_time) {
+    if (state.tracks.length > 0 && new_position > state.tracks[state.current_track + 1]?.start_time) {
       set_state({
         current_track: (state.current_track ?? 0) + 1,
         current_position: new_position,

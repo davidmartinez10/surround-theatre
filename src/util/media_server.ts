@@ -36,6 +36,7 @@ const server = http.createServer(async function media_server(req, res) {
   ffmpeg_process.stdout?.pipe(res);
 
   function close() {
+    ffmpeg_process.kill();
     if (os.platform() === "win32") {
       proper_exec(`taskkill /pid ${ffmpeg_process.pid} /f /t`);
     } else {

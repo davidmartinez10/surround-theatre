@@ -134,6 +134,8 @@ export function loudnorm_first_pass(filename: string) {
           process.nextTick(refresh_player);
         }
       }
+      ffmpeg_process.kill();
+      measuring_process.kill();
       if (os.platform() === "win32") {
         proper_exec(`taskkill /pid ${ffmpeg_process.pid} /f /t`);
         proper_exec(`taskkill /pid ${measuring_process.pid} /f /t`);
@@ -202,33 +204,6 @@ export async function start_ffmpeg_process(
     );
   }
 
-  // args.push(
-  //   // "-probesize",
-  //   // "32",
-  //   // "-analyzeduration",
-  //   // "0",
-  //   // "-fflags",
-  //   // "nobuffer",
-  //   "-fflags",
-  //   "discardcorrupt",
-  //   "-flags",
-  //   "low_delay",
-  // );
-
-  const encoders = {
-    vp8: "libvpx",
-    vp9: "libvpx-vp9",
-    h264: "libx264rgb",
-    hevc: "libx265",
-    mpeg2: "mpegvideo",
-    mpeg4: "libxvid",
-    msmpeg4: "msmpeg4",
-    h263: "h263",
-    theora: "libtheora",
-    raw: "rawvideo",
-    mjpeg: "mjpeg",
-  } as const;
-
   if (Number.isSafeInteger(video_stream) && video_stream >= 0) {
     args.push(
       "-map",
@@ -258,8 +233,6 @@ export async function start_ffmpeg_process(
     date.setSeconds(current_position);
     args.unshift("-ss", date.toISOString().substr(11, 8));
   }
-
-  // const file_location = path.parse(filename);
 
   args.push("-");
 

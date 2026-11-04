@@ -38,15 +38,6 @@
     "ws": "^8.18.3",
     "xel": "0.33.13"
   },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "@ffprobe-installer/darwin-x64",
-      "esbuild",
-      "ffmpeg-static",
-      "nw",
-      "nwts-tools"
-    ]
-  },
   "bundleDependencies": [
     "pouchdb-adapter-memory",
     "@ffprobe-installer/ffprobe",

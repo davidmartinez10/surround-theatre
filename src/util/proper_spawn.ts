@@ -25,7 +25,7 @@ export function proper_exec(command: string, cwd = process.cwd(),
                             cwd,
                             env: process.env,
                             // [stdin, stdout, stderr, extra]
-                            stdio: ["pipe", "pipe", "pipe", "inherit"],
+                            stdio: ["pipe", "pipe", "pipe"],
                           });
 
 
@@ -54,6 +54,7 @@ export function proper_spawn(command: string, cwd = process.cwd(),
   const [cmd, ...args] = command.replaceAll("\\ ", "\n").split(" ");
   const basename       = cmd.match(/^.*?[\\/]([^\\/]+)$/)?.[1] || cmd;
   console.info(`$ \x1b[33m${basename} ${args.join(" ")}\x1b[0m`);
+  console.log(cmd, args.join(" ").replaceAll("\n", " "));
 
   return child_process.spawn(cmd,
                              args.map(function callbackfn(
@@ -63,7 +64,7 @@ export function proper_spawn(command: string, cwd = process.cwd(),
                                cwd,
                                env: process.env,
                                // [stdin, stdout, stderr, extra]
-                               stdio: ["pipe", "pipe", "pipe", "inherit"],
+                               stdio: ["pipe", "pipe", "pipe"],
                              });
 }
 
