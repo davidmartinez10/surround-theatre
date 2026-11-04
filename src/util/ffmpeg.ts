@@ -10,7 +10,9 @@ import {Meta, metadata_db, state, State} from "./db";
 import {filter_complex} from "./filters";
 import {escape_path, proper_exec, proper_spawn} from "./proper_spawn";
 
-export const ffmpeg = nw.require("ffmpeg-static") as string;
+// export const ffmpeg = nw.require("ffmpeg-static") as string;
+export const ffmpeg
+  = "C:\\Users\\David\\Downloads\\ffmpeg-9.0.2-full_build\\bin\\ffmpeg.exe";
 // export const ffmpeg2 = import("ffmpeg-static");
 export const ffprobe = nw.require("@ffprobe-installer/ffprobe").path as string;
 
@@ -66,12 +68,15 @@ export function loudnorm_first_pass(filename: string) {
     if (state.binaural_renderer.type === "sofa") {
       args.push(
         "-af",
-        `"sofalizer=sofa=${
-          path.join(
-            process.cwd(),
-            "sofa",
-            state.binaural_renderer.filename,
-            )}"`,
+        `"sofalizer=sofa='${
+          path
+            .join(
+              process.cwd(),
+              "sofa",
+              state.binaural_renderer.filename,
+              )
+            .replaceAll("\\", "/")
+            .replaceAll(":", "\\:")}'"`,
       );
     } else if (state.binaural_renderer.type === "hrir") {
       args.push(
@@ -202,12 +207,15 @@ export async function start_ffmpeg_process(
   if (binaural_renderer.type === "sofa") {
     args.push(
       "-af",
-      `"sofalizer=sofa=${
-        path.join(
-          process.cwd(),
-          "sofa",
-          binaural_renderer.filename,
-          )}"`,
+      `"sofalizer=sofa='${
+        path
+          .join(
+            process.cwd(),
+            "sofa",
+            binaural_renderer.filename,
+            )
+          .replaceAll("\\", "/")
+          .replaceAll(":", "\\:")}'"`,
       "-map",
       JSON.stringify(`0:${audio_stream}`),
     );
