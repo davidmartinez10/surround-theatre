@@ -1,12 +1,12 @@
 import path from "nwts-tools/lib/node/path";
 
-import { state } from "./db";
-import { get_metadata } from "./ffmpeg";
+import {state} from "./db";
+import {get_metadata} from "./ffmpeg";
 
 export async function filter_complex(loudnorm?: string) {
   const { audio_stream, binaural_renderer, audio_streams } = state;
   const { channels }
-    = audio_streams.find(function (e) { return e.index === audio_stream; })
+  = audio_streams.find(function(e) { return e.index === audio_stream; })
     || { channels: 0 };
 
   const hrir_metadata = await get_metadata(
@@ -81,7 +81,7 @@ export async function filter_complex(loudnorm?: string) {
   const filter = [
     hrir_channels < channels / 2 || hrir_channels < 8
       ? limited_pan_map[channels as keyof typeof limited_pan_map]
-      || limited_pan_map[8]
+          || limited_pan_map[8]
       : pan_map[channels as keyof typeof pan_map] || pan_map[8],
     loudnorm && `,loudnorm=${loudnorm}`,
     "[fh]",

@@ -1,10 +1,10 @@
 import style from "../App.module.css";
-import { refresh_player } from "../VideoPlayer";
+import {refresh_player} from "../VideoPlayer";
 
-import { load_media_file } from "./mediaLoader";
+import {load_media_file} from "./mediaLoader";
 
 export function initialize_dropzone(): void {
-  document.body.ondragover = function (e) {
+  document.body.ondragover = function(e) {
     e.preventDefault();
     e.stopPropagation();
 
@@ -12,14 +12,14 @@ export function initialize_dropzone(): void {
     e.dataTransfer!.dropEffect = "copy";
   };
 
-  document.body.ondragleave = function (e) {
+  document.body.ondragleave = function(e) {
     e.preventDefault();
     e.stopPropagation();
 
     document.body.classList.remove(style.dragging);
   };
 
-  document.body.ondrop = async function (e) {
+  document.body.ondrop = async function(e) {
     e.preventDefault();
     e.stopPropagation();
 

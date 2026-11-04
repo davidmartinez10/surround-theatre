@@ -1,22 +1,22 @@
 import fs from "nwts-tools/lib/node/fs";
 import node_path from "nwts-tools/lib/node/path";
 
-import { refresh_player, video } from "../VideoPlayer";
+import {refresh_player, video} from "../VideoPlayer";
 
-import { SupportedImageExtensions, SupportedVideoCodecs } from "./constants";
-import { MusicTrack, queue_db, set_state, state, State } from "./db";
-import { ffmpeg, get_metadata } from "./ffmpeg";
-import { escape_path, proper_exec } from "./proper_spawn";
+import {SupportedImageExtensions, SupportedVideoCodecs} from "./constants";
+import {MusicTrack, queue_db, set_state, state, State} from "./db";
+import {ffmpeg, get_metadata} from "./ffmpeg";
+import {escape_path, proper_exec} from "./proper_spawn";
 
 const { parse } = nw.require(
-  "@lightrabbit/cue-parser/lib/cue.js",
-) as typeof import("@lightrabbit/cue-parser/lib/cue.js");
+                    "@lightrabbit/cue-parser/lib/cue.js",
+                    ) as typeof import("@lightrabbit/cue-parser/lib/cue.js");
 
 export async function process_cue_file(
   file_path: string,
-): Promise<{ path: string; tracks?: MusicTrack[]; }> {
+  ): Promise<{path: string; tracks?: MusicTrack[];}> {
   const data = await fs.promises.readFile(file_path, { encoding: "utf8" });
-  const o = parse(data);
+  const              o = parse(data);
 
   if ((o.files || []).length === 1) {
     const [real_file] = o.files!;
@@ -24,8 +24,8 @@ export async function process_cue_file(
 
     const tracks = real_file.tracks!.map(function callbackfn(value) {
       const { title, performer } = value;
-      const { min, sec } = value.indexes![0].time;
-      const start_time = sec + (min * 60 || 0);
+      const { min, sec }         = value.indexes![0].time;
+      const start_time           = sec + (min * 60 || 0);
       return {
         title,
         performer,
@@ -60,7 +60,7 @@ export async function process_media_file(file_path: string): Promise<{
   // Process chapters/tracks from metadata
   if (metadata?.chapters?.length > 0) {
     new_state.tracks = metadata.chapters.map(function callbackfn(
-      value: Record<string, string & { title: string; }>,
+      value: Record<string, string&{ title: string; }>,
     ) {
       return {
         start_time: Number(value.start_time),
@@ -70,24 +70,24 @@ export async function process_media_file(file_path: string): Promise<{
   }
 
   // Process audio streams
-  const audio_streams = metadata.streams.filter(function (
+  const audio_streams = metadata.streams.filter(function(
     e: { codec_type: string; }) { return e.codec_type === "audio"; });
 
   console.log("audio_streams", audio_streams);
   const audio_stream = audio_streams
-    .sort(function (
-      a: { channels: number; },
-      b: { channels: number; },
-    ) { return a.channels - b.channels; })
-    .slice()
-    .pop();
+                         .sort(function(
+                           a: { channels: number; },
+                           b: { channels: number; },
+                         ) { return a.channels - b.channels; })
+                         .slice()
+                         .pop();
 
   new_state.audio_streams = audio_streams;
-  new_state.audio_stream = audio_stream?.index;
-  new_state.audio_codec = audio_stream?.codec_name || "";
+  new_state.audio_stream  = audio_stream?.index;
+  new_state.audio_codec   = audio_stream?.codec_name || "";
 
   // Process video streams
-  const video_streams = metadata.streams.filter(function (
+  const video_streams = metadata.streams.filter(function(
     e: { codec_type: string; }) { return e.codec_type === "video"; });
 
   const vstream = video_streams.slice().shift();
@@ -96,17 +96,18 @@ export async function process_media_file(file_path: string): Promise<{
     if (vstream?.codec_name === "mjpeg") {
       process.nextTick(async function callback() {
         const { stdout } = await proper_exec(
-          `${escape_path(ffmpeg)} -f mjpeg -i ${JSON.stringify(
-            file_path,
-          )} -an -f mjpeg -`,
+          `${escape_path(ffmpeg)} -f mjpeg -i ${
+            JSON.stringify(
+              file_path,
+              )} -an -f mjpeg -`,
         );
         new_state.static_bitmap = stdout.toString();
-        const src = URL.createObjectURL(new Blob([stdout]));
-        video.poster = src;
+        const src               = URL.createObjectURL(new Blob([stdout]));
+        video.poster            = src;
       });
     } else {
-      new_state.video_stream = vstream?.index;
-      new_state.reencode_video = !SupportedVideoCodecs.includes(
+      new_state.video_stream   = vstream?.index;
+      new_state.reencode_video = ! SupportedVideoCodecs.includes(
         vstream?.codec_name as any,
       );
       console.log(vstream?.codec_name, new_state.reencode_video);
@@ -126,12 +127,12 @@ export async function process_media_file(file_path: string): Promise<{
     if (images?.length > 0) {
       video.poster
         = "file://"
-        + node_path.join(
-          node_path.dirname(file_path),
-          images.find(function predicate(
-            value) { return value.toLowerCase().includes("cover"); })
-          || images[0],
-        );
+          + node_path.join(
+            node_path.dirname(file_path),
+            images.find(function predicate(
+              value) { return value.toLowerCase().includes("cover"); })
+              || images[0],
+          );
     }
   }
 
@@ -143,7 +144,7 @@ export async function process_media_file(file_path: string): Promise<{
 export async function load_media_file(
   file: File,
   index: number,
-): Promise<void> {
+  ): Promise<void> {
   let new_state = {
     ...state,
     video_streams: [],
@@ -151,8 +152,8 @@ export async function load_media_file(
   } as State;
 
   if (node_path.extname(file.name) === ".cue") {
-    const cue_data = await process_cue_file(file.path);
-    new_state.path = cue_data.path;
+    const cue_data   = await process_cue_file(file.path);
+    new_state.path   = cue_data.path;
     new_state.tracks = cue_data.tracks || ([] as MusicTrack[]);
   } else {
     new_state.path = file.path;

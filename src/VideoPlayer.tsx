@@ -24,7 +24,10 @@ video.onplaying = function () {
       return clearInterval(interval);
     }
     const new_position = state.current_position + 1;
-    if (state.tracks.length > 0 && new_position > state.tracks[state.current_track + 1]?.start_time) {
+    if (
+      state.tracks.length > 0 &&
+      new_position > state.tracks[state.current_track + 1]?.start_time
+    ) {
       set_state({
         current_track: (state.current_track ?? 0) + 1,
         current_position: new_position,
@@ -138,8 +141,8 @@ export async function refresh_player(just_clear = false) {
       console.log(state.duration);
       m.style.left = `${(chapter.start_time / state.duration) * 100}%`;
       m.style.width = `${(((state.tracks[index + 1]?.start_time || state.duration) -
-          chapter.start_time) /
-          state.duration) *
+        chapter.start_time) /
+        state.duration) *
         100
         }%`;
       if (chapter.title) {
@@ -156,7 +159,7 @@ export async function refresh_player(just_clear = false) {
   return;
 }
 
-function VideoPlayer({ class: className }: { class?: string; }) {
+function VideoPlayer({ class: className }: { class?: string }) {
   return (
     <x-box
       class={className}
