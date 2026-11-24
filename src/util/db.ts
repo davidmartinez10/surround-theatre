@@ -1,5 +1,6 @@
+import {SingleDocumentCollection, use_collection, use_single_document_collection,} from "solid1-pouchdb-collection";
+
 import {PouchDB} from "./pouchdb";
-import {SingleDocumentCollection, use_collection, use_single_document_collection,} from "./use_pouchdb_collection";
 
 export const queue_db = new PouchDB<{track: string; name: string}>("queue", {
   adapter: "memory",
@@ -144,7 +145,7 @@ export const default_state: Partial<State> = {
   port: 13231,
   binaural_renderer: {
     type: "sofa",
-    filename: "D2_48K_24bit_256tap_FIR_SOFA.sofa",
+    filename: "D2 48K 24bit 256tap FIR.sofa",
   },
   playing: false,
   volume: 1,
