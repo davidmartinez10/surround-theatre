@@ -1,4 +1,5 @@
 import os from "nwts-tools/lib/node/os";
+import path from "nwts-tools/lib/node/path";
 
 import {colors} from "./constants";
 import {proper_exec} from "./proper_spawn";
@@ -57,13 +58,16 @@ export async function initialize_theme(): Promise<void> {
     break;
   default:
     if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      xel.theme = "node_modules/xel/themes/adwaita-dark.css";
+      xel.theme = `file://${
+        path.join(process.cwd(),
+                  "node_modules/xel/themes/cupertino-dark.css")}`;
     } else {
       xel.theme = "node_modules/xel/themes/adwaita.css";
     }
-    xel.theme = "node_modules/xel/themes/adwaita-dark.css";
-    xel.icons = "node_modules/xel/icons/material.svg";
-    xel.size  = "medium";
+    xel.icons = [`file://${
+      path.join(process.cwd(), "node_modules/xel/icons/fluent.svg")}`];
+    // xel.icons = "node_modules/xel/icons/material.svg";
+    xel.size = "medium";
     window.matchMedia("(prefers-color-scheme: dark)")
       .addEventListener("change", function(event) {
         if (event.matches) {
