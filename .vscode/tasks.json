@@ -14,7 +14,7 @@
         "background": {
           "activeOnStart": true,
           "beginsPattern": "^.*$",
-          "endsPattern": "npx nw build.*"
+          "endsPattern": "npx nw.*"
         }
       }
     },
