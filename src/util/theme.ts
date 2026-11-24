@@ -30,8 +30,7 @@ export async function initialize_theme(): Promise<void> {
     }
     xel.icons = [`file://${
       path.join(process.cwd(), "node_modules/xel/icons/fluent.svg")}`];
-    // xel.icons = ["node_modules/xel/icons/fluent.svg"];
-    xel.size = "medium";
+    xel.size  = "medium";
 
     const accent    = await get_accent_color();
     xel.accentColor = accent;
