@@ -2,9 +2,8 @@ import { bar } from "./Controls";
 import { ControlChars } from "./util/constants";
 import { set_state, state } from "./util/db";
 
-export const video = (
-  <video autoplay preload="auto"></video>
-) as HTMLVideoElement;
+export const video = <video autoplay preload="auto">
+</video> as HTMLVideoElement;
 
 video.addEventListener("dblclick", function () {
   if (document.fullscreenElement) {
@@ -136,15 +135,16 @@ export async function refresh_player(just_clear = false) {
   console.log("state", state.tracks.length);
   if (state.tracks?.length > 1) {
     for (const [index, chapter] of state.tracks.entries()) {
-      const m = (<div class="chapter-marker"></div>) as HTMLDivElement;
+      const m = <div class="chapter-marker"></div> as HTMLDivElement;
       m.style.position = "relative";
       console.log(state.duration);
       m.style.left = `${(chapter.start_time / state.duration) * 100}%`;
-      m.style.width = `${(((state.tracks[index + 1]?.start_time || state.duration) -
-        chapter.start_time) /
-        state.duration) *
+      m.style.width = `${
+        (((state.tracks[index + 1]?.start_time || state.duration) -
+          chapter.start_time) /
+          state.duration) *
         100
-        }%`;
+      }%`;
       if (chapter.title) {
         m.title = chapter.title;
       }
@@ -166,9 +166,12 @@ function VideoPlayer({ class: className }: { class?: string }) {
       style="width: -webkit-fill-available; height: -webkit-fill-available; padding: 0.5rem; position: relative;"
     >
       {video}
-      {state.loading ? (
-        <x-throbber style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 999999;"></x-throbber>
-      ) : null}
+      {state.loading
+        ? (
+          <x-throbber style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 999999;">
+          </x-throbber>
+        )
+        : null}
     </x-box>
   );
 }

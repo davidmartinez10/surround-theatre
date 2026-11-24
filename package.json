@@ -28,7 +28,7 @@
     "@types/pouchdb-browser": "^6.1.5",
     "ffmpeg-static": "5.2.0",
     "nw": "0.102.1-sdk",
-    "nwts-tools": "^0.5.3",
+    "nwts-tools": "0.5.4",
     "pouchdb-adapter-memory": "^9.0.0",
     "pouchdb-browser": "^9.0.0",
     "solid-js": "^1.5.1",

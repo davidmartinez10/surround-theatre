@@ -5,3 +5,4 @@ allowBuilds:
   nw: true
 minimumReleaseAgeExclude:
   - solid1-pouchdb-collection@1.0.0
+  - nwts-tools@0.5.4
