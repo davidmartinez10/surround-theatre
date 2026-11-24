@@ -2,8 +2,10 @@ import { bar } from "./Controls";
 import { ControlChars } from "./util/constants";
 import { set_state, state } from "./util/db";
 
-export const video = <video autoplay preload="auto">
-</video> as HTMLVideoElement;
+export const video = (
+  <video autoplay preload="auto">
+  </video>
+) as HTMLVideoElement;
 
 video.addEventListener("dblclick", function () {
   if (document.fullscreenElement) {
@@ -63,7 +65,7 @@ var errored = false;
 
 video.onerror = function (e) {
   errored = true;
-  console.log("error", e);
+  console.log(e.srcElement.error.message);
   clearInterval(interval);
   set_state({ playing: false });
   if (state.path?.length > 0) {

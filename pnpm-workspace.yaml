@@ -1,7 +1,5 @@
 allowBuilds:
-  '@ffprobe-installer/darwin-x64': set this to true or false
   esbuild: true
-  ffmpeg-static: true
   nw: true
 minimumReleaseAgeExclude:
   - solid1-pouchdb-collection@1.0.0

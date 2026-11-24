@@ -1,5 +1,6 @@
 import {execSync} from "node:child_process";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import {defineConfig, Plugin} from "vite";
 import solidPlugin from "vite-plugin-solid";
@@ -39,11 +40,16 @@ const nwts_plugin = {
     }
 
     if (! fs.existsSync("public")) { fs.mkdirSync("public"); }
-    if (! fs.existsSync("build")) { fs.mkdirSync("build"); }
+    if (! fs.existsSync(process.env.BUILD_DIRECTORY)) {
+      fs.mkdirSync(process.env.BUILD_DIRECTORY);
+    }
     await fs.promises.writeFile(path.join("public", "package.json"),
                                 JSON.stringify(manifest));
     await fs.promises.writeFile(path.join("build", "package.json"),
                                 JSON.stringify(manifest));
+    await fs.promises.cp(path.join("ffmpeg", os.platform(), os.arch()),
+                         path.join(process.env.BUILD_DIRECTORY, "ffmpeg"),
+                         { recursive: true })
     execSync(`npm install`,
              { stdio: "inherit", cwd: path.join(process.cwd(), "public") });
   }
@@ -55,7 +61,7 @@ export default defineConfig({
   build: {
     assetsDir: ".",
     outDir: process.env.BUILD_DIRECTORY,
-    emptyOutDir: true,
+    emptyOutDir: false,
     sourcemap: true,
     rollupOptions: {
       output: {

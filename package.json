@@ -2,16 +2,14 @@
   "name": "surround-theatre",
   "displayName": "Surround Theatre",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "description": "Surround Theatre is a media player with Spatial Audio support.",
   "scripts": {
     "build": "node scripts/build.js",
-    "build:browser": "BUILD_DIRECTORY=dist npx vite build --config vite.browser.config.ts",
     "clean": "node scripts/clean.js",
     "compile": "node scripts/compile.js",
     "start": "node scripts/dev-build.js",
-    "dev:browser": "BUILD_DIRECTORY=dist npx vite --config vite.browser.config.ts",
     "dev-hmr": "node scripts/dev-hmr.js",
     "make": "node scripts/make.js",
     "package": "node scripts/package.js",
@@ -19,14 +17,12 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@ffprobe-installer/ffprobe": "1.4.1",
     "@lightrabbit/cue-parser": "^0.0.4",
     "@types/chrome": "^0.0.197",
     "@types/node": "^18.19.80",
     "@types/nw.js": "^0.13.21",
     "@types/pouchdb": "^6.4.2",
     "@types/pouchdb-browser": "^6.1.5",
-    "ffmpeg-static": "5.2.0",
     "nw": "0.102.1-sdk",
     "nwts-tools": "0.5.4",
     "pouchdb-adapter-memory": "^9.0.0",
@@ -41,8 +37,6 @@
   },
   "bundleDependencies": [
     "pouchdb-adapter-memory",
-    "@ffprobe-installer/ffprobe",
-    "ffmpeg-static",
     "xel"
   ],
   "devDependencies": {
