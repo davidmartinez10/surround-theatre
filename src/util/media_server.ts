@@ -1,9 +1,9 @@
+import {proper_exec} from "nwts-tools/dist/lib/proper-spawn";
 import http from "nwts-tools/lib/node/http";
 import os from "nwts-tools/lib/node/os";
 
 import {default_state, set_state, state} from "./db";
 import {start_ffmpeg_process} from "./ffmpeg";
-import {proper_exec} from "./proper_spawn";
 
 set_state({...default_state });
 

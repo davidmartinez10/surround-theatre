@@ -1,4 +1,5 @@
 import {ChildProcess} from "child_process";
+import {escape_path, proper_exec, proper_spawn} from "nwts-tools/dist/lib/proper-spawn";
 import child_process from "nwts-tools/lib/node/child_process";
 import os from "nwts-tools/lib/node/os";
 import path from "nwts-tools/lib/node/path";
@@ -8,7 +9,6 @@ import {refresh_player} from "../VideoPlayer";
 
 import {Meta, metadata_db, state, State} from "./db";
 import {filter_complex} from "./filters";
-import {escape_path, proper_exec, proper_spawn} from "./proper_spawn";
 
 export const ffmpeg
   = path.join("ffmpeg", "ffmpeg") + os.platform() === "win32" ? ".exe" : "";
