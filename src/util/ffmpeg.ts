@@ -10,9 +10,9 @@ import {Meta, metadata_db, state, State} from "./db";
 import {filter_complex} from "./filters";
 import {escape_path, proper_exec, proper_spawn} from "./proper_spawn";
 
-// export const ffmpeg = nw.require("ffmpeg-static") as string;
-export const ffmpeg
-  = "C:\\Users\\David\\Downloads\\ffmpeg-9.0.2-full_build\\bin\\ffmpeg.exe";
+export const ffmpeg = nw.require("ffmpeg-static") as string;
+// export const ffmpeg =
+// "C:\\Users\\David\\Downloads\\ffmpeg-9.0.2-full_build\\bin\\ffmpeg.exe";
 // export const ffmpeg2 = import("ffmpeg-static");
 export const ffprobe = nw.require("@ffprobe-installer/ffprobe").path as string;
 

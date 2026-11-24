@@ -41,7 +41,8 @@
   "bundleDependencies": [
     "pouchdb-adapter-memory",
     "@ffprobe-installer/ffprobe",
-    "ffmpeg-static"
+    "ffmpeg-static",
+    "xel"
   ],
   "devDependencies": {
     "@types/ws": "^8.18.1"

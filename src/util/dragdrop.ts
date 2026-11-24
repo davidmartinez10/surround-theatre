@@ -1,7 +1,7 @@
 import style from "../App.module.css";
 import {refresh_player} from "../VideoPlayer";
 
-import {load_media_file} from "./mediaLoader";
+import {load_media_file} from "./media_loader";
 
 export function initialize_dropzone(): void {
   document.body.ondragover = function(e) {
