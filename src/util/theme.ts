@@ -21,59 +21,75 @@ export async function initialize_theme(): Promise<void> {
   switch (os.platform()) {
   case "darwin":
     if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      xel.theme = "node_modules/xel/themes/cupertino-dark.css";
+      xel.theme = `file://${
+        path.join(process.cwd(),
+                  "node_modules/xel/themes/cupertino-dark.css")}`;
     } else {
-      xel.theme = "node_modules/xel/themes/cupertino.css";
+      xel.theme = `file://${
+        path.join(process.cwd(), "node_modules/xel/themes/cupertino.css")}`;
     }
-    xel.icons = ["node_modules/xel/icons/fluent.svg"];
-    xel.size  = "medium";
+    xel.icons = [`file://${
+      path.join(process.cwd(), "node_modules/xel/icons/fluent.svg")}`];
+    // xel.icons = ["node_modules/xel/icons/fluent.svg"];
+    xel.size = "medium";
 
     const accent    = await get_accent_color();
     xel.accentColor = accent;
     window.matchMedia("(prefers-color-scheme: dark)")
       .addEventListener("change", function(event) {
         if (event.matches) {
-          xel.theme = "node_modules/xel/themes/cupertino-dark.css";
+          xel.theme = `file://${
+            path.join(process.cwd(),
+                      "node_modules/xel/themes/cupertino-dark.css")}`;
         } else {
-          xel.theme = "node_modules/xel/themes/cupertino.css";
+          xel.theme = `file://${
+            path.join(process.cwd(), "node_modules/xel/themes/cupertino.css")}`;
         }
       });
     break;
   case "win32":
     if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      xel.theme = "node_modules/xel/themes/fluent-dark.css";
+      xel.theme = `file://${
+        path.join(process.cwd(), "node_modules/xel/themes/fluent-dark.css")}`;
     } else {
-      xel.theme = "node_modules/xel/themes/fluent.css";
+      xel.theme = `file://${
+        path.join(process.cwd(), "node_modules/xel/themes/fluent.css")}`;
     }
-    xel.icons = "node_modules/xel/icons/fluent.svg";
+    xel.icons = [`file://${
+      path.join(process.cwd(), "node_modules/xel/icons/fluent.svg")}`];
     xel.size  = "medium";
     window.matchMedia("(prefers-color-scheme: dark)")
       .addEventListener("change", function(event) {
         if (event.matches) {
-          xel.theme = "node_modules/xel/themes/fluent-dark.css";
+          xel.theme = `file://${
+            path.join(process.cwd(),
+                      "node_modules/xel/themes/fluent-dark.css")}`;
         } else {
-          xel.theme = "node_modules/xel/themes/fluent.css";
+          xel.theme = `file://${
+            path.join(process.cwd(), "node_modules/xel/themes/fluent.css")}`;
         }
       });
     break;
   default:
     if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
       xel.theme = `file://${
-        path.join(process.cwd(),
-                  "node_modules/xel/themes/cupertino-dark.css")}`;
+        path.join(process.cwd(), "node_modules/xel/themes/adwaita-dark.css")}`;
     } else {
-      xel.theme = "node_modules/xel/themes/adwaita.css";
+      xel.theme = `file://${
+        path.join(process.cwd(), "node_modules/xel/themes/adwaita.css")}`;
     }
     xel.icons = [`file://${
-      path.join(process.cwd(), "node_modules/xel/icons/fluent.svg")}`];
-    // xel.icons = "node_modules/xel/icons/material.svg";
-    xel.size = "medium";
+      path.join(process.cwd(), "node_modules/xel/icons/material.svg")}`];
+    xel.size  = "medium";
     window.matchMedia("(prefers-color-scheme: dark)")
       .addEventListener("change", function(event) {
         if (event.matches) {
-          xel.theme = "node_modules/xel/themes/adwaita-dark.css";
+          xel.theme = `file://${
+            path.join(process.cwd(),
+                      "node_modules/xel/themes/adwaita-dark.css")}`;
         } else {
-          xel.theme = "node_modules/xel/themes/adwaita.css";
+          xel.theme = `file://${
+            path.join(process.cwd(), "node_modules/xel/themes/adwaita.css")}`;
         }
       });
     break;
