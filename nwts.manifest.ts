@@ -44,6 +44,8 @@ export const manifest: NWJSManifest = {
     width: 750,
     height: 590,
     position: "center",
+    min_width: 638,
+    min_height: 438
   },
   "chromium-args": chromium_args.join(" "),
   nodejs: true,

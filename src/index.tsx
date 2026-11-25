@@ -5,8 +5,18 @@ import { render } from "solid-js/web";
 
 import { manifest } from "../nwts.manifest";
 import App from "./App";
+import { create_menu } from "./menu";
 import { initialize_dropzone } from "./util/dragdrop";
 import { initialize_theme } from "./util/theme";
+
+["dragenter", "dragover", "dragleave", "drop"].forEach(function (event) {
+  window.addEventListener(event, function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }, false);
+});
+
+nw.Window.get().on("loaded", create_menu);
 
 async function main() {
   // Initialize theme

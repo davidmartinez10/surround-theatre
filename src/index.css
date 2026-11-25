@@ -45,14 +45,13 @@ video::-webkit-media-controls-start-playback-button {
 .marker {
   height: 96%;
   width: 0%;
-  z-index: 9999999;
   border-right: 1px solid var(--accent-color);
   grid-area: inner;
 }
 
 .chapter-marker {
   height: 96%;
-  border-right: 1px solid var(--foreground-color);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
   grid-area: inner;
 }
 

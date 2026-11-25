@@ -22,37 +22,48 @@ const replaceRequirePlugin: Plugin = {
         // exclude already-wrapped ones
         .replace(/(?<!nw\.)require\(/g, "nw.require(");
     }
-  }
+  },
 };
 
 const nwts_plugin = {
   async options() {
-    const package_json
-      = JSON.parse(await fs.promises.readFile("./package.json", "utf-8"));
+    const package_json = JSON.parse(
+      await fs.promises.readFile("./package.json", "utf-8"),
+    );
+
+    if (! fs.existsSync("public")) fs.mkdirSync("public");
 
     if (package_json?.bundleDependencies && package_json?.dependencies) {
       Object.assign(manifest, {
         dependencies: Object.fromEntries(
           Object.entries(package_json.dependencies).filter(function(value) {
             return package_json.bundleDependencies.includes(value[0]);
-          }))
+          }),
+          ),
       });
     }
 
-    if (! fs.existsSync("public")) { fs.mkdirSync("public"); }
-    if (! fs.existsSync(process.env.BUILD_DIRECTORY)) {
+    await fs.promises
+      .rm(process.env.BUILD_DIRECTORY, { recursive: true, force: true })
+      .catch(Boolean),
       fs.mkdirSync(process.env.BUILD_DIRECTORY);
-    }
-    await fs.promises.writeFile(path.join("public", "package.json"),
-                                JSON.stringify(manifest));
-    await fs.promises.writeFile(path.join("build", "package.json"),
-                                JSON.stringify(manifest));
-    await fs.promises.cp(path.join("ffmpeg", os.platform(), os.arch()),
-                         path.join(process.env.BUILD_DIRECTORY, "ffmpeg"),
-                         { recursive: true })
-    execSync(`npm install`,
-             { stdio: "inherit", cwd: path.join(process.cwd(), "public") });
-  }
+
+    await fs.promises.cp(
+      path.join("ffmpeg", os.platform(), os.arch()),
+      path.join(process.env.BUILD_DIRECTORY, "ffmpeg"),
+      { recursive: true },
+    );
+
+    await fs.promises.writeFile(
+      path.join(process.env.BUILD_DIRECTORY, "package.json"),
+      JSON.stringify(manifest),
+    );
+
+    execSync(`pnpm install`, {
+      stdio: "inherit",
+      cwd: path.join(process.cwd(), process.env.BUILD_DIRECTORY),
+    });
+  },
 } as unknown as Plugin;
 
 // https://vitejs.dev/config/

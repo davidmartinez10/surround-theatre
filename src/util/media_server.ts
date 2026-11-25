@@ -1,9 +1,9 @@
-import {proper_exec} from "nwts-tools/dist/lib/proper-spawn";
 import http from "nwts-tools/lib/node/http";
 import os from "nwts-tools/lib/node/os";
 
 import {default_state, set_state, state} from "./db";
 import {start_ffmpeg_process} from "./ffmpeg";
+import {proper_exec} from "./proper-spawn";
 
 set_state({...default_state });
 
@@ -36,16 +36,17 @@ const server = http.createServer(async function media_server(req, res) {
   ffmpeg_process.stdout?.pipe(res);
 
   function close() {
+    console.log("kill", ffmpeg_process.pid);
     ffmpeg_process?.stdin?.destroy();
     ffmpeg_process?.stdout?.destroy();
     ffmpeg_process?.stderr?.destroy();
-    ffmpeg_process.kill();
     process.kill(-ffmpeg_process.pid!, "SIGKILL");
     if (os.platform() === "win32") {
       proper_exec(`taskkill /pid ${ffmpeg_process.pid} /T /F`);
     } else {
       proper_exec(`kill -9 ${ffmpeg_process.pid}`);
     }
+    ffmpeg_process.kill();
   }
 
   req.on("close", close);

@@ -1,4 +1,3 @@
-import {escape_path, proper_exec} from "nwts-tools/dist/lib/proper-spawn";
 import fs from "nwts-tools/lib/node/fs";
 import node_path from "nwts-tools/lib/node/path";
 
@@ -7,6 +6,7 @@ import {refresh_player, video} from "../VideoPlayer";
 import {SupportedImageExtensions, SupportedVideoCodecs} from "./constants";
 import {MusicTrack, queue_db, set_state, state, State} from "./db";
 import {ffmpeg, get_metadata} from "./ffmpeg";
+import {escape_path, proper_exec} from "./proper-spawn";
 
 const { parse } = nw.require(
                     "@lightrabbit/cue-parser/lib/cue.js",
@@ -181,3 +181,5 @@ export async function load_media_file(
     _id: file.path + Date.now(),
   });
 }
+
+export function load_media_files(files: File[]) {}

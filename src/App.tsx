@@ -1,5 +1,6 @@
 import style from "./App.module.css";
 import Controls from "./Controls";
+import { file_input } from "./file_input";
 import VideoPlayer from "./VideoPlayer";
 
 function App() {
@@ -7,12 +8,13 @@ function App() {
     <x-box class={style.app} vertical>
       <x-box class={style.grid}>
         <x-card class={style.cell}>
-          <VideoPlayer class={style.sectioAureaLong} />
+          <VideoPlayer />
         </x-card>
         <x-card class={style.cell}>
-          <Controls class={style.sectioAureaShort} />
+          <Controls />
         </x-card>
       </x-box>
+      {file_input}
     </x-box>
   );
 }

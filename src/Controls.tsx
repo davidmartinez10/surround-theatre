@@ -17,9 +17,10 @@ const marker = (
   <div
     class="marker"
     style={{ width: `${(state.current_position / state.duration) * 100}%` }}
-  ></div>
+  >
+  </div>
 ) as HTMLDivElement;
-export const bar = (<div class="bar">{marker}</div>) as HTMLDivElement;
+export const bar = <div class="bar">{marker}</div> as HTMLDivElement;
 
 bar.onclick = async function (e) {
   video.pause();
@@ -33,10 +34,9 @@ bar.onclick = async function (e) {
   const fraction =
     (target.getBoundingClientRect().x - bar.offsetLeft + e.offsetX - 2) /
     bar.clientWidth;
-  const pos =
-    Math.round(
-      Math.min(Math.max(0, state.duration * fraction), state.duration),
-    ) || 0;
+  const pos = Math.round(
+    Math.min(Math.max(0, state.duration * fraction), state.duration),
+  ) || 0;
 
   const x = state.tracks.findIndex(function (chapter) {
     return pos < chapter.start_time;
@@ -49,7 +49,7 @@ bar.onclick = async function (e) {
   process.nextTick(refresh_player);
 };
 
-function Controls({ class: className }: { class?: string; }) {
+function Controls({ class: className }: { class?: string }) {
   const previous = (
     <x-button disabled={(state?.path || "").length <= 0}>
       {ControlChars.previous}
@@ -59,13 +59,12 @@ function Controls({ class: className }: { class?: string; }) {
   previous.onclick = async function () {
     video.pause();
     await set_state({
-      current_position:
-        state.tracks
-          .slice()
-          .reverse()
-          .find(function predicate(value) {
-            return value.start_time < state.current_position;
-          })?.start_time || 0,
+      current_position: state.tracks
+        .slice()
+        .reverse()
+        .find(function predicate(value) {
+          return value.start_time < state.current_position;
+        })?.start_time || 0,
     });
     process.nextTick(refresh_player);
   };
@@ -102,15 +101,14 @@ function Controls({ class: className }: { class?: string; }) {
     video.pause();
     await set_state({
       current_track: (state.current_track ?? 0) + 1,
-      current_position:
-        Math.round(
-          state.tracks[(state.current_track ?? 0) + 1]?.start_time || 0,
-        ) || 0,
+      current_position: Math.round(
+        state.tracks[(state.current_track ?? 0) + 1]?.start_time || 0,
+      ) || 0,
     });
     process.nextTick(refresh_player);
   };
 
-  const stop = (<x-button>{ControlChars.stop}</x-button>) as HTMLButtonElement;
+  const stop = <x-button>{ControlChars.stop}</x-button> as HTMLButtonElement;
 
   stop.style.margin = "0 0.25rem 0 0.25rem";
   stop.title = "Stop";
@@ -124,7 +122,10 @@ function Controls({ class: className }: { class?: string; }) {
   };
 
   const playback_buttons = (
-    <x-box vertical style="align-self: flex-start; gap: 0.25rem;">
+    <x-box
+      vertical
+      style="align-self: flex-start; gap: 0.25rem; cursor: pointer;"
+    >
       <x-buttons>
         {previous}
         {play}
@@ -152,11 +153,9 @@ function Controls({ class: className }: { class?: string; }) {
 
   const binaural_renderer = (
     <x-select
-      value={
-        state?.binaural_renderer?.filename ||
+      value={state?.binaural_renderer?.filename ||
         default_state?.binaural_renderer?.filename ||
-        ""
-      }
+        ""}
     >
       <x-menu>
         <x-label>Sofalizer</x-label>
@@ -235,7 +234,8 @@ function Controls({ class: className }: { class?: string; }) {
           await set_state({ volume: Number(event?.target?.value) / 100 });
           video.volume = Number(event?.target?.value) / 100;
         }}
-      ></x-slider>
+      >
+      </x-slider>
       <x-label
         onclick={function () {
           set_state({ volume: 1 });
@@ -307,8 +307,7 @@ function Controls({ class: className }: { class?: string; }) {
                             {stream.channel_layout || `${stream.channels}ch`}
                           </x-label>
                           <x-label>
-                            {stream.sample_rate}kHz{" "}
-                            {stream.bit_rate
+                            {stream.sample_rate}kHz {stream.bit_rate
                               ? `@${Math.round(stream.bit_rate / 1000)}kbps`
                               : ""}
                           </x-label>
@@ -341,8 +340,9 @@ function Controls({ class: className }: { class?: string; }) {
                         <x-label>
                           <x-label>{stream.codec_name}</x-label>
                           <x-label>
-                            {`${stream.height}${stream.field_order === "progressive" ? "p" : "i"
-                              }`}
+                            {`${stream.height}${
+                              stream.field_order === "progressive" ? "p" : "i"
+                            }`}
                           </x-label>
                         </x-label>
                       </x-menuitem>

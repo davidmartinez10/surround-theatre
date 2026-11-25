@@ -1,5 +1,4 @@
 import {ChildProcess} from "child_process";
-import {escape_path, proper_exec, proper_spawn} from "nwts-tools/dist/lib/proper-spawn";
 import child_process from "nwts-tools/lib/node/child_process";
 import os from "nwts-tools/lib/node/os";
 import path from "nwts-tools/lib/node/path";
@@ -9,12 +8,13 @@ import {refresh_player} from "../VideoPlayer";
 
 import {Meta, metadata_db, state, State} from "./db";
 import {filter_complex} from "./filters";
+import {escape_path, proper_exec, proper_spawn} from "./proper-spawn";
 
 export const ffmpeg
-  = path.join("ffmpeg", "ffmpeg") + os.platform() === "win32" ? ".exe" : "";
+  = path.join("ffmpeg", "ffmpeg") + (os.platform() === "win32" ? ".exe" : "");
 export const ffprobe
-  = path.join("ffmpeg", "ffprobe") + os.platform() === "win32" ? ".exe" : "";
-
+  = path.join("ffmpeg", "ffprobe") + (os.platform() === "win32" ? ".exe" : "");
+console.log(1, ffmpeg, ffprobe, path.join("ffmpeg", "ffmpeg"));
 const loudness_settings = "I=-16:TP=-1.5:LRA=11";
 
 export async function get_metadata(filename: string) {
