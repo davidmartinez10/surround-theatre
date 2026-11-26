@@ -226,12 +226,25 @@ export async function start_ffmpeg_process(
     );
   }
 
+  // args.push(
+  //   // "-probesize",
+  //   // "32",
+  //   // "-analyzeduration",
+  //   // "0",
+  //   // "-fflags",
+  //   // "nobuffer",
+  //   "-fflags",
+  //   "discardcorrupt",
+  //   "-flags",
+  //   "low_delay",
+  // );
+
   if (Number.isSafeInteger(video_stream) && video_stream >= 0) {
     args.push(
       "-map",
       `0:${video_stream}`,
       "-vcodec",
-      reencode_video ? "libx264 -qp 0" // -preset ultrafast -tune zerolatency"
+      reencode_video ? "libxvid -qp 0" // -preset ultrafast -tune zerolatency"
                      : "copy",
     );
   } else {

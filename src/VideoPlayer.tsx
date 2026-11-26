@@ -65,7 +65,7 @@ var errored = false;
 
 video.onerror = function (e) {
   errored = true;
-  console.log(e.srcElement.error.message);
+  console.error(e.srcElement.error);
   clearInterval(interval);
   set_state({ playing: false });
   if (state.path?.length > 0) {
