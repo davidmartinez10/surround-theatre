@@ -30,6 +30,8 @@ const chromium_args = [
   //"--disable-get-user-media", "--disable-app-content-verification",
   "--enable-usermedia-audio-capture --enable-blink-features=WebRTC",
   // "--enable-features=UnsafeWebGPU",
+  // "--ignore-gpu-blocklist", "--disable-gpu-driver-bug-workarounds"
+  // "--disable-accelerated-video-decode"
 ];
 
 export const manifest: NWJSManifest = {

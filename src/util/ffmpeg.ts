@@ -244,7 +244,7 @@ export async function start_ffmpeg_process(
       "-map",
       `0:${video_stream}`,
       "-vcodec",
-      reencode_video ? "libxvid -qp 0" // -preset ultrafast -tune zerolatency"
+      reencode_video ? "libx264 -qp 0" // -preset ultrafast -tune zerolatency"
                      : "copy",
     );
   } else {
